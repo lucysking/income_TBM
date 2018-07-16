@@ -1,0 +1,8 @@
+"0","```r
+##EXPLORATORY##
+Two_ModelSum=extractModelSummaries('/Users/lucyking/Desktop/LCA_Final_Project/FINAL_MPLUS_MODELS/MPlusScript_111516_2Class_NoThresholds_STEP3.out')
+Three_ModelSum=extractModelSummaries('/Users/lucyking/Desktop/LCA_Final_Project/FINAL_MPLUS_MODELS/MPlusScript_111516_3Class_NoThresholds_STEP3.out')
+Four_ModelSum=extractModelSummaries('/Users/lucyking/Desktop/LCA_Final_Project/FINAL_MPLUS_MODELS/MPlusScript_111516_4Class_NoThresholds_STEP3.out')
+ModelSum=rbind(Two_ModelSum, Three_ModelSum, Four_ModelSum)
+ModelSum
+```"

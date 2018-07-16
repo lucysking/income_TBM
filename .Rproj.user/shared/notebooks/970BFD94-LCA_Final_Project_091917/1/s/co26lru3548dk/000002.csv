@@ -1,0 +1,11 @@
+"0","```r
+##Store output file in R
+Three_Exp=readModels('/Users/lucyking/Desktop/LCA_Final_Project/FINAL_MPLUS_MODELS/MPlusScript_111516_3Class_NoThresholds_STEP3.out')
+```"
+"1","Reading model:  /Users/lucyking/Desktop/LCA_Final_Project/FINAL_MPLUS_MODELS/MPlusScript_111516_3Class_NoThresholds_STEP3.out 
+"
+"0","```r
+Three_Exp$class_counts
+```"
+"1","$modelEstimated
+"

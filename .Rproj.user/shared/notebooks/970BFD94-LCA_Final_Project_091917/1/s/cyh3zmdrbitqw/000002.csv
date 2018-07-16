@@ -1,0 +1,44 @@
+"0","```r
+contrasts(LCA$Class)=cbind(IvV=c(0,1,0), SvV=c(0,0,1))
+contrasts(LCA$Class)
+```"
+"1","  IvV SvV
+1   0   0
+2   1   0
+3   0   1
+"
+"0","```r
+eICV_Class <-lm(eICV ~ Class, data = LCA)
+Anova(eICV_Class, Type = \"III\")
+```"
+"1","Anova Table (Type II tests)
+
+Response: eICV
+              Sum Sq  Df F value Pr(>F)
+Class     1.8895e+10   2  0.3496 0.7054
+Residuals 4.8636e+12 180               
+"
+"0","```r
+summary(eICV_Class)
+```"
+"1","
+Call:
+lm(formula = eICV ~ Class, data = LCA)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-312050 -107162  -17953   81113 1017928 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  1361077      35045  38.838   <2e-16 ***
+ClassIvV      -15664      42463  -0.369    0.713    
+ClassSvV        8146      38278   0.213    0.832    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 164400 on 180 degrees of freedom
+  (28 observations deleted due to missingness)
+Multiple R-squared:  0.00387,	Adjusted R-squared:  -0.007198 
+F-statistic: 0.3496 on 2 and 180 DF,  p-value: 0.7054
+"

@@ -1,0 +1,12 @@
+"0","```r
+hc_wf$cort_respond_grp <- relevel(hc_wf$cort_respond_grp, ref = \"nochanger\")
+intrus1 <- multinom(cort_respond_grp ~  intrus_M, data = hc_wf)
+summary(intrus1)
+z_intrus1 <- summary(intrus1)$coefficients/summary(intrus1)$standard.errors
+p_intrus1 <- (1 - pnorm(abs(z_intrus1), 0, 1)) * 2
+p_intrus1
+exp(coef(intrus1))
+exp(confint(intrus1))
+pR2(intrus1) #McFadden R^2 index; values between .2 and .4 indicate excellent model fit
+
+```"

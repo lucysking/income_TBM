@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1522111855968.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "CAD974F",
+    "lastKnownWriteTime" : 6,
+    "last_content_update" : 1522111855968,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "EC7C1A18",
+        "caption" : "x",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=x&cache_key=EC7C1A18",
+        "displayedObservations" : 50,
+        "environment" : "",
+        "object" : "x",
+        "preview" : 0,
+        "totalObservations" : 50,
+        "variables" : 4
+    },
+    "relative_order" : 11,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}

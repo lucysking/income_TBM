@@ -1,0 +1,3 @@
+"0","sfp_av_max <- reshape(sfp_av_max, idvar=c(""ID"", ""Time""), timevar=""Episode"", direction=""wide"")
+"
+"2","multiple rows match for Episode=R2: first taken"

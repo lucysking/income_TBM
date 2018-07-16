@@ -1,0 +1,27 @@
+"0","covariates <- read_csv(inc_TBM_cov) %>%"
+"0","  mutate(ELS_ID = as.integer(ELS_ID)) "
+"2","Parsed with column specification:
+cols(
+  ELS_ID = col_integer(),
+  Age = col_double(),
+  Male = col_integer(),
+  Tanner = col_double(),
+  ICV = col_double(),
+  White = col_integer()
+)
+"
+"0","rois <- read_excel(inc_46all) %>%"
+"0","  mutate(ELS_ID = as.integer(ELS_ID))"
+"0","cbcl_externalizing <- "
+"0","  read_sav(T1_CBCL, user_na = 999) %>%"
+"0","  mutate(ELS_ID = as.integer(ELS_ID)) %>%"
+"0","  select("
+"0","    ELS_ID,"
+"0","    externalizing = T1_CBCL_old_Externalizing_Problems_Total_Score"
+"0","  )"
+"0","inc_rr_boys <-"
+"0","  covariates %>%"
+"0","  filter(Male == 1) %>%"
+"0","  left_join(rois, by = ""ELS_ID"") %>%"
+"0","  left_join(cbcl_externalizing, by = ""ELS_ID"") %>%"
+"0","  select(-Male, -ELS_ID)"

@@ -1,0 +1,8 @@
+"0","```r
+horm_B_reac <- subset(horm_B, Sample != \"5\" & !is.na(cort_trim) & !is.na(TimeC))
+horm_B_reac <- subset(horm_B, Sample != \"5\")
+x <- lcmm(cort_trim~ TimeC, random = ~TimeC, subject = \"ID\", mixture = ~TimeC, ng=3, idiag= TRUE, nwg = TRUE, data = horm_B_reac, link = \"linear\") 
+#allowing Time to vary per person (random), linear Time is the variable n the mixture term
+summary(x)
+postprob(x)
+```"

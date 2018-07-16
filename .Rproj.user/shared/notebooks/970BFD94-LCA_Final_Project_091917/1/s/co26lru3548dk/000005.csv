@@ -1,0 +1,57 @@
+"1","
+$avgProbs.mostLikely
+      1     2     3
+1 0.962 0.033 0.005
+2 0.027 0.883 0.090
+3 0.001 0.034 0.965
+
+$classificationProbs.mostLikely
+      1     2     3
+1 0.937 0.060 0.003
+2 0.015 0.894 0.091
+3 0.001 0.034 0.965
+
+$logitProbs.mostLikely
+       1      2 3
+1  5.757  3.014 0
+2 -1.833  2.283 0
+3 -6.949 -3.333 0
+"
+"0","```r
+##use aveProbs.mostLikely--\"Average Latent Class Probabilities for Most Likely Latent Class Membership (Row)by Latent Class (Column)\" in Mplus output for classification accuracy. Report in paper in the order that you present the classes (Typical/Low, Family Instability, Direct Victimization)
+##Store CRP data
+Three_Exp_CRPs=as.data.frame(Three_Exp$gh5$means_and_variances_data$observed_probs)
+##Retain Only Endorsement Probabilities (Category 2)
+Nth.delete<-function(dataframe, n)dataframe[-(seq(1,to=nrow(Three_Exp_CRPs),by=2)),]
+Three_Exp_CRPs_YES=Nth.delete(Three_Exp_CRPs, 46)
+#Create list of ELS Types and add to CRP data
+type_list=c(\"Experienced Accident\", \"Witnessed Accident\", \"Disaster\", \"Witnessed Illness/Injury\", \"Death of Someone Close\", \"Experienced Illness\", \"Family Mental Illness/Substance Abuse\", \"Separation from Family\", \"Parental Divorce\", \"Moving/Family Moving in and out\", \"Witnessed Suicide/Self-Harm\", \"Physical Assault/Abuse\", \"Animal Attack\", \"Domestic Violence-Physical\", \"Domestic Violence-Threats\", \"Family Fights-Verbal\", \"Legal Problems/Imprisonment\", \"Financial Problems\", \"War/Terrorism on TV\", \"Emotional Abuse\", \"Neglect\", \"Bullying\", \"Community Violence\")
+Three_Exp_CRPs_YES=cbind(Three_Exp_CRPs_YES, type_list)
+colnames(Three_Exp_CRPs_YES)=c( \"Direct Victimization\",\"Family Instability\",\"Typical/Low\",  \"Type\")
+#Reshape CRP data for plotting
+Three_Exp_CRPs_YES_re=melt(Three_Exp_CRPs_YES, id=\"Type\")
+colnames(Three_Exp_CRPs_YES_re)=c(\"Type\", \"Class\", \"CRP\")
+Three_Exp_CRPs_YES_re$Type <- ordered(Three_Exp_CRPs_YES_re$Type, levels = c(\"Disaster\",\"Animal Attack\",\"Witnessed Accident\",\"Experienced Accident\",\"Witnessed Illness/Injury\",\"Experienced Illness\",\"Death of Someone Close\",\"War/Terrorism on TV\", \"Community Violence\",\"Bullying\",\"Witnessed Suicide/Self-Harm\", \"Neglect\",\"Emotional Abuse\",\"Physical Assault/Abuse\",\"Domestic Violence-Threats\",\"Domestic Violence-Physical\",\"Family Mental Illness/Substance Abuse\",\"Legal Problems/Imprisonment\",\"Financial Problems\",\"Parental Divorce\", \"Separation from Family\", \"Moving/Family Moving in and out\", \"Family Fights-Verbal\"))
+Three_Exp_CRPs_YES_re$Class <- factor(Three_Exp_CRPs_YES_re$Class, levels=c(\"Direct Victimization\", \"Family Instability\", \"Typical/Low\"), labels=c(\"Direct Victimization\", \"Family Instability\", \"Typical/Low\"))
+##Plot CRP data 
+png(filename=\"/Users/lucyking/Desktop/LCA_Final_Project/Plots/Exploratory.png\", width =1000, height = 1000)
+p=ggplot(Three_Exp_CRPs_YES_re, aes(x=Type, y=CRP, group=Class, color=Class))
+p=p + geom_line(size=2.5)+geom_point(size=5)
+p+theme_bw()+theme(axis.text.x  = element_text(angle=90, vjust=0.5, size=25),axis.text.y  = element_text(size=20), axis.title.y = element_text(size=25),legend.title=element_text(size=25), legend.text=element_text(size=25))+ylab(\"Conditional Response Probability\")+xlab(\"\")+scale_color_manual(values=c(\"firebrick1\", \"dodgerblue\", \"green2\"))
+dev.off()
+```"
+"1","null device 
+          1 
+"
+"0","```r
+png(filename=\"/Users/lucyking/Desktop/LCA_Final_Project/Plots/Exploratory_bw.png\", width =1000, height = 1000)
+```"
+"0","```r
+p=ggplot(Three_Exp_CRPs_YES_re, aes(x=Type, y=CRP, group=Class, colour=Class))
+p=p + geom_line(size=2.5)+geom_point(size=5)
+p+theme_bw()+theme(axis.text.x  = element_text(angle=90, vjust=0.5, size=25),axis.text.y  = element_text(size=20), axis.title.y = element_text(size=25),legend.title=element_text(size=25), legend.text=element_text(size=25))+ylab(\"Conditional Response Probability\")+xlab(\"\")+scale_color_manual(values=c(\"black\", \"gray60\", \"ivory3\"))
+dev.off()
+```"
+"1","null device 
+          1 
+"

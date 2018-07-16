@@ -1,0 +1,4 @@
+"0","```r
+ggplot(data = LCA, aes(x = Class, y = RightHippocampus, color = Class)) +
+  geom_boxplot(width = 0.3) 
+```"

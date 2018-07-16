@@ -1,0 +1,16 @@
+"0","```r
+ggplot(subset(hc_wf, !is.na(nochVdec) & sAA_reac_B<.05), aes(x=sAA_reac_B, y=nochVdec)) + geom_point(position=position_jitter(height=0.03, width=0)) + 
+  stat_smooth(method=\"glm\", method.args=list(family=\"binomial\"), se=FALSE, size = 4, colour = \"indianred1\")
+
++
+  ylab(\"Pr (Decreaser)\") +
+  xlab(\"sAA slope\") +
+  theme_bw() +
+  theme(
+          panel.grid.major = element_blank(),
+          axis.title.x = element_text(size = 24),
+          axis.title.y = element_text(size = 24),
+          axis.text.x = element_text(size = 18),
+          axis.text.y = element_text(size = 18),
+          plot.title = element_text(size = 24))
+```"

@@ -1,0 +1,190 @@
+"0","```r
+#hippocampus
+Hipp_Class_ML <- lmer(Hippocampus ~ eICVcent + AgeCent + side + Class + (1|ELS_ID), REML = F, data=LCA_brain_lf)
+```"
+"1","Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+anova(Hipp_Side, Hipp_Class_ML) #class signficantly improves model fit
+```"
+"1","refitting model(s) with ML (instead of REML)
+"
+"1","Data: LCA_brain_lf
+Models:
+object: Hippocampus ~ eICVcent + AgeCent + side + (1 | ELS_ID)
+..1: Hippocampus ~ eICVcent + AgeCent + side + Class + (1 | ELS_ID)
+       Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(>Chisq)  
+object  6 4954.2 4977.3 -2471.1   4942.2                           
+..1     8 4951.0 4981.8 -2467.5   4935.0 7.2262      2    0.02697 *
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+"
+"0","```r
+Hipp_Class_MLx <- lmer(Hippocampus ~ eICVcent + AgeCent + side * Class + (1|ELS_ID), REML = F, data=LCA_brain_lf)
+```"
+"1","Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+anova(Hipp_Class_ML, Hipp_Class_MLx) #interaction does not improve model fit
+```"
+"1","Data: LCA_brain_lf
+Models:
+object: Hippocampus ~ eICVcent + AgeCent + side + Class + (1 | ELS_ID)
+..1: Hippocampus ~ eICVcent + AgeCent + side * Class + (1 | ELS_ID)
+       Df    AIC    BIC  logLik deviance Chisq Chi Df Pr(>Chisq)
+object  8 4951.0 4981.8 -2467.5   4935.0                        
+..1    10 4954.4 4993.0 -2467.2   4934.4 0.561      2     0.7554
+"
+"0","```r
+Hipp_Type_ML <- lmer(Hippocampus ~ eICVcent + AgeCent + side + NumTypeCent + (1|ELS_ID), REML = F, data=LCA_brain_lf)
+```"
+"1","Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+anova(Hipp_Side, Hipp_Type_ML) #type marginally improves model fit
+```"
+"1","refitting model(s) with ML (instead of REML)
+"
+"1","Data: LCA_brain_lf
+Models:
+object: Hippocampus ~ eICVcent + AgeCent + side + (1 | ELS_ID)
+..1: Hippocampus ~ eICVcent + AgeCent + side + NumTypeCent + (1 | 
+..1:     ELS_ID)
+       Df    AIC    BIC  logLik deviance Chisq Chi Df Pr(>Chisq)  
+object  6 4954.2 4977.3 -2471.1   4942.2                          
+..1     7 4952.9 4979.9 -2469.5   4938.9 3.245      1    0.07164 .
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+"
+"0","```r
+LCA_brain_lf_income <-subset(LCA_brain_lf, !is.na(income_needsCent)) #subsetting and running the covariate only model in the subset with income data to allow model comparison
+Hipp_CovIncome_ML <- lmer(Hippocampus ~ eICVcent + AgeCent + side + (1|ELS_ID), REML = F, data=LCA_brain_lf_income)
+```"
+"1","Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+Hipp_Income_ML <- lmer(Hippocampus ~ eICVcent + AgeCent + side + income_needsCent + (1|ELS_ID), REML = F, data=LCA_brain_lf_income)
+```"
+"1","Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+anova(Hipp_CovIncome_ML, Hipp_Income_ML) #income does not improve model fit
+```"
+"1","Data: LCA_brain_lf_income
+Models:
+object: Hippocampus ~ eICVcent + AgeCent + side + (1 | ELS_ID)
+..1: Hippocampus ~ eICVcent + AgeCent + side + income_needsCent + 
+..1:     (1 | ELS_ID)
+       Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(>Chisq)
+object  6 4544.6 4567.3 -2266.3   4532.6                         
+..1     7 4545.4 4571.8 -2265.7   4531.4 1.2697      1     0.2598
+"
+"0","```r
+Hipp_Ed_ML <- lmer(Hippocampus ~ eICVcent + AgeCent + side + educ_ordCent + (1|ELS_ID), REML = F, data=LCA_brain_lf_income)
+```"
+"1","Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+anova(Hipp_CovIncome_ML,Hipp_Ed_ML)
+```"
+"1","Data: LCA_brain_lf_income
+Models:
+object: Hippocampus ~ eICVcent + AgeCent + side + (1 | ELS_ID)
+..1: Hippocampus ~ eICVcent + AgeCent + side + educ_ordCent + (1 | 
+..1:     ELS_ID)
+       Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(>Chisq)
+object  6 4544.6 4567.3 -2266.3   4532.6                         
+..1     7 4545.2 4571.6 -2265.6   4531.2 1.4674      1     0.2258
+"
+"0","```r
+#amygdala
+Amyg_Class_ML <- lmer(Amygdala ~ eICVcent + AgeCent + side + Class + (1|ELS_ID), REML = F, data=LCA_brain_lf)
+```"
+"1","Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+anova(Amyg_Side, Amyg_Class_ML) #class does not significantly improve model fit
+```"
+"1","Data: LCA_brain_lf
+Models:
+object: Amygdala ~ eICVcent + AgeCent + side + (1 | ELS_ID)
+..1: Amygdala ~ eICVcent + AgeCent + side + Class + (1 | ELS_ID)
+       Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(>Chisq)
+object  6 4698.7 4722.0 -2343.3   4686.7                         
+..1     8 4700.2 4731.3 -2342.1   4684.2 2.4803      2     0.2893
+"
+"0","```r
+Amyg_Class_MLx <- lmer(Amygdala ~ eICVcent + AgeCent + side * Class + (1|ELS_ID), REML = F, data=LCA_brain_lf)
+```"
+"1","Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+anova(Amyg_Class_ML, Amyg_Class_MLx) #interaction does not improve model fit
+```"
+"1","Data: LCA_brain_lf
+Models:
+object: Amygdala ~ eICVcent + AgeCent + side + Class + (1 | ELS_ID)
+..1: Amygdala ~ eICVcent + AgeCent + side * Class + (1 | ELS_ID)
+       Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(>Chisq)
+object  8 4700.2 4731.3 -2342.1   4684.2                         
+..1    10 4702.4 4741.2 -2341.2   4682.4 1.8462      2     0.3973
+"
+"0","```r
+Amyg_Type_ML <- lmer(Amygdala ~ eICVcent + AgeCent + side + NumTypeCent + (1|ELS_ID), REML = F, data=LCA_brain_lf)
+```"
+"1","Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+anova(Amyg_Side, Amyg_Type_ML) #type does not improve model fit
+```"
+"1","Data: LCA_brain_lf
+Models:
+object: Amygdala ~ eICVcent + AgeCent + side + (1 | ELS_ID)
+..1: Amygdala ~ eICVcent + AgeCent + side + NumTypeCent + (1 | ELS_ID)
+       Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(>Chisq)
+object  6 4698.7 4722.0 -2343.3   4686.7                         
+..1     7 4698.3 4725.5 -2342.2   4684.3 2.3568      1     0.1247
+"
+"0","```r
+Amyg_CovIncome_ML <- lmer(Amygdala ~ eICVcent + AgeCent + side + (1|ELS_ID), REML = F, data=LCA_brain_lf_income)
+```"
+"1","Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+Amyg_Income_ML <- lmer(Amygdala ~ eICVcent + AgeCent + side + income_needsCent + (1|ELS_ID), REML = F, data=LCA_brain_lf_income)
+```"
+"1","Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+anova(Amyg_CovIncome_ML, Amyg_Income_ML) #income does not improve model fit
+```"
+"1","Data: LCA_brain_lf_income
+Models:
+object: Amygdala ~ eICVcent + AgeCent + side + (1 | ELS_ID)
+..1: Amygdala ~ eICVcent + AgeCent + side + income_needsCent + (1 | 
+..1:     ELS_ID)
+       Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(>Chisq)
+object  6 4319.8 4342.6 -2153.9   4307.8                         
+..1     7 4319.7 4346.3 -2152.8   4305.7 2.1336      1     0.1441
+"
+"0","```r
+Amyg_CovEd_ML <- lmer(Amygdala ~ eICVcent + AgeCent + side + (1|ELS_ID), REML = F, data=LCA_brain_lf_income)
+```"
+"1","Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+Amyg_Ed_ML <- lmer(Amygdala ~ eICVcent + AgeCent + side + educ_ordCent + (1|ELS_ID), REML = F, data=LCA_brain_lf_income)
+```"
+"1","Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+anova(Amyg_CovEd_ML, Amyg_Ed_ML) #parent education does improve model fit
+```"
+"1","Data: LCA_brain_lf_income
+Models:
+object: Amygdala ~ eICVcent + AgeCent + side + (1 | ELS_ID)
+..1: Amygdala ~ eICVcent + AgeCent + side + educ_ordCent + (1 | ELS_ID)
+       Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(>Chisq)
+object  6 4319.8 4342.6 -2153.9   4307.8                         
+..1     7 4320.8 4347.4 -2153.4   4306.8 1.0365      1     0.3086
+"

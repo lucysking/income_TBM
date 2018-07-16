@@ -1,0 +1,17 @@
+"0","```r
+#income reported in bins, used median for income to needs as in Yu et al. (2017) developmental science
+#santa clara country income : low income (threshold for low income is set at 1.6x the relevant 4 person very low income level; very low income level is 50% of the median income for santa clara county with adjustment for high cost of housing; ratios <= 1 are therefore \"low income\")
+#https://www.huduser.gov/portal/datasets/il/il2017/2017summary.odn
+LCA$SC_lowincome <- ifelse(LCA$pplinhome_1_TEXT == 1, 59350, NA)
+LCA$SC_lowincome <- ifelse(LCA$pplinhome_1_TEXT == 2, 67800, LCA$SC_lowincome)
+LCA$SC_lowincome <- ifelse(LCA$pplinhome_1_TEXT == 3, 76300, LCA$SC_lowincome)
+LCA$SC_lowincome <- ifelse(LCA$pplinhome_1_TEXT == 4, 84750, LCA$SC_lowincome)
+LCA$SC_lowincome <- ifelse(LCA$pplinhome_1_TEXT == 5, 91500, LCA$SC_lowincome)
+LCA$SC_lowincome <- ifelse(LCA$pplinhome_1_TEXT == 6, 98350, LCA$SC_lowincome)
+LCA$SC_lowincome <- ifelse(LCA$pplinhome_1_TEXT == 7, 105100, LCA$SC_lowincome)
+LCA$SC_lowincome <- ifelse(LCA$pplinhome_1_TEXT == 8, 111900, LCA$SC_lowincome)
+LCA$SC_lowincome <- ifelse(LCA$pplinhome_1_TEXT > 8, 111900, LCA$SC_lowincome)
+LCA$income_needs <- LCA$Household_Income_Num/LCA$SC_lowincome
+ggplot(LCA, aes(x = LCA$income_needs)) +
+  geom_histogram(bins = 30, position = \"dodge\", fill= \"purple\", color = \"gray\") 
+```"

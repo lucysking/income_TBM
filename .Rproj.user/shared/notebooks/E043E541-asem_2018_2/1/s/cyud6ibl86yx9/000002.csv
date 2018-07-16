@@ -1,0 +1,38 @@
+"0","```r
+library(foreign)
+library(nnet)
+library(reshape2)
+
+```"
+"1","
+Attaching package: ‘reshape2’
+
+The following objects are masked from ‘package:data.table’:
+
+    dcast, melt
+"
+"0","```r
+library(pscl)
+```"
+"1","Classes and Methods for R developed in the
+Political Science Computational Laboratory
+Department of Political Science
+Stanford University
+Simon Jackman
+hurdle and zeroinfl functions by Achim Zeileis
+"
+"0","```r
+library(fmsb)
+library(dplyr)
+library(ggplot2)
+library(lm.beta)
+library(lcmm)
+```"
+"1","Loading required package: survival
+
+Attaching package: ‘lcmm’
+
+The following objects are masked from ‘package:lme4’:
+
+    fixef, ranef
+"

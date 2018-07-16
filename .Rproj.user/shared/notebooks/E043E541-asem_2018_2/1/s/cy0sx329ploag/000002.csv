@@ -1,0 +1,27 @@
+"0","```r
+summary(lm(i ~ sens_M*CTC_rate + WC, data = ll))
+
+```"
+"1","
+Call:
+lm(formula = i ~ sens_M * CTC_rate + WC, data = ll)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-5.2008 -1.4080 -0.4443  0.7949  9.1543 
+
+Coefficients:
+                 Estimate Std. Error t value Pr(>|t|)  
+(Intercept)     -6.318899   6.065520  -1.042   0.3083  
+sens_M           2.557489   1.421308   1.799   0.0851 .
+CTC_rate         0.242613   0.194740   1.246   0.2254  
+WC               0.001480   0.002823   0.524   0.6051  
+sens_M:CTC_rate -0.066138   0.046352  -1.427   0.1671  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 2.937 on 23 degrees of freedom
+  (32 observations deleted due to missingness)
+Multiple R-squared:  0.1379,	Adjusted R-squared:  -0.01201 
+F-statistic: 0.9199 on 4 and 23 DF,  p-value: 0.4693
+"

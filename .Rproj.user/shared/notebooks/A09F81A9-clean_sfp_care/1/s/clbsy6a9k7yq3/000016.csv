@@ -1,0 +1,5 @@
+"0","```r
+ggplot(sfp_wf, aes(x = posregR_M)) + # slightly negatively skewed + kurtosis
+  geom_histogram(bins = 30, position = \"dodge\", fill= \"gray\", color = \"black\")+
+  theme_bw() 
+```"

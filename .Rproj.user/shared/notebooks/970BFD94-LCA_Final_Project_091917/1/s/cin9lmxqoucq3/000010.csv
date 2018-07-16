@@ -1,0 +1,5 @@
+"0","```r
+  
+ggplot(data = LCA, aes(x = Class, y = eICV, color = Class)) +
+  geom_boxplot(width = 0.3)
+```"

@@ -1,0 +1,15 @@
+"0","```r
+png(filename=\"/Users/lucyking/Desktop/BABIES/plots/posreg_hist.png\", width = 600, height = 500)
+ggplot(sfp_wf, aes(x = posreg_M)) +
+  geom_histogram(bins = 30, position = \"dodge\", fill= \"gray\", color = \"black\") +
+  theme_bw() +
+  theme(
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(), 
+          axis.title.x = element_text(size = 24),
+          axis.title.y = element_text(size = 24),
+          axis.text.x = element_text(size = 18),
+          axis.text.y = element_text(size = 18),
+          plot.title = element_text(size = 24)) +
+  xlab(\"Positive Regard\")
+```"

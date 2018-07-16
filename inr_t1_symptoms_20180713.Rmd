@@ -1,0 +1,530 @@
+---
+title: "Effects of INR on T1 symptoms"
+author: "Lucy King"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+##Libraries
+library(tidyverse)
+
+##Parameters
+
+#files
+t1_cbcl_file <- "~/Desktop/ELS/income_TBM/data/ELS_T1S1_CBCL_old_1991_Final Profile Data_ID 1-218.sav" 
+t1_ysr_file <- "~/Desktop/ELS/income_TBM/data/ELS_T1S1_YSR_old_1991_Final Profile Data_ID 1-218.sav" 
+roi_inc_int_file <- "~/Desktop/ELS/income_TBM/data/inc_interac_46rois_all.xlsx" #clusters identified in INR*sex TBM model
+inr_file <- "~/Desktop/ELS/income_TBM/data/income_to_needs.csv"
+covariates_file <- "~/Desktop/ELS/income_TBM/data/tbm_cov_income.csv"
+```
+
+##Join data
+```{r}
+roi_symptoms <-
+  readxl::read_xlsx(roi_inc_int_file, sheet = "Vols") %>% 
+  left_join(read_csv(covariates_file), by = "ELS_ID") %>% 
+  left_join(read_csv(inr_file), by = "ELS_ID") %>% 
+  left_join(
+    haven::read_sav(t1_cbcl_file, user_na = 999) %>% 
+      mutate(
+        ELS_ID = as.integer(ELS_ID),
+        cbcl_externalizing = as.integer(
+          T1_CBCL_old_Externalizing_Problems_Total_Score
+        ),
+        cbcl_externalizing = if_else(
+          cbcl_externalizing == 999, NA_integer_, cbcl_externalizing
+        )
+      ) %>% 
+      select(
+        ELS_ID,
+        cbcl_externalizing
+      ), 
+    by = "ELS_ID"
+  ) %>% 
+  left_join(
+    haven::read_sav(t1_ysr_file, user_na = 999) %>% 
+      mutate(
+        ELS_ID = as.integer(ELS_ID),
+        ysr_internalizing = as.integer(
+          T1_YSR_old_Internalizing_Problems_Total_Score
+        ),
+        ysr_internalizing = if_else(
+          ysr_internalizing == 999, NA_integer_, ysr_internalizing
+        )
+      ) %>% 
+      select(
+        ELS_ID,
+        ysr_internalizing
+      )
+  )
+
+#male only dataset
+roi_symptoms_male <- 
+  roi_symptoms %>% 
+  filter(Male == 1)
+
+#female only dataset
+roi_symptoms_female <- 
+  roi_symptoms %>% 
+  filter(Male == 0)
+
+```
+
+##Distributions of symptoms
+```{r symptom_hist}
+#externalizing
+roi_symptoms %>% 
+  ggplot(aes(x = cbcl_externalizing)) +
+  geom_histogram(bins = 30, position = "dodge", fill = "gray", color = "black") +
+  theme_bw()
+
+roi_symptoms_male %>% 
+  ggplot(aes(x = cbcl_externalizing)) +
+  geom_histogram(bins = 30, position = "dodge", fill = "gray", color = "black") +
+  theme_bw()
+
+roi_symptoms_female %>% 
+  ggplot(aes(x = cbcl_externalizing)) +
+  geom_histogram(bins = 30, position = "dodge", fill = "gray", color = "black") +
+  theme_bw()
+
+# internalizing
+roi_symptoms %>% 
+  ggplot(aes(x = ysr_internalizing)) +
+  geom_histogram(bins = 30, position = "dodge", fill = "gray", color = "black") +
+  theme_bw()
+
+roi_symptoms_male %>% 
+  ggplot(aes(x = ysr_internalizing)) +
+  geom_histogram(bins = 30, position = "dodge", fill = "gray", color = "black") +
+  theme_bw()
+
+roi_symptoms_female %>% 
+  ggplot(aes(x = ysr_internalizing)) +
+  geom_histogram(bins = 30, position = "dodge", fill = "gray", color = "black") +
+  theme_bw()
+```
+
+##Create coding for sex and race; standardize continuous variables
+```{r}
+roi_symptoms <-
+  roi_symptoms %>% 
+  mutate(
+    male_simple_effect = recode(
+      Male,
+      "1" = "0",
+      "0" = "1"
+    ),
+    female_simple_effect = recode(
+      Male,
+      "1" = "1",
+      "0" = "0"
+    ),
+    sex_effect_coded = recode(
+      Male,
+      "1" = "1", #male
+      "0" = "-1" #female
+    ),
+    white_effect_coded = recode(
+      White,
+      "1" = "1",
+      "0" = "-1"
+    )
+  ) 
+```
+
+##Externalizing
+```{r}
+#main effect
+mod_extern_income = lm(cbcl_externalizing ~ sqrt(income_needs), data = roi_symptoms)
+
+summary(mod_extern_income)
+
+AIC(mod_extern_income)
+
+confint(mod_extern_income)
+
+#interaction with sex 
+mod_sex_extern_income = 
+  lm(cbcl_externalizing ~ sqrt(income_needs) * sex_effect_coded, data = roi_symptoms)
+
+summary(mod_sex_extern_income)
+
+AIC(mod_sex_extern_income)
+
+confint(mod_sex_extern_income)
+
+#interaction with TBM covariates
+mod_sex_extern_income_cov = 
+  lm(cbcl_externalizing ~ sqrt(income_needs) * sex_effect_coded + white_effect_coded + Tanner + Age, data = roi_symptoms)
+
+summary(mod_sex_extern_income_cov)
+
+confint(mod_sex_extern_income_cov)
+
+#simple effects
+
+#males
+mod_male_extern_income = 
+  lm(cbcl_externalizing ~ sqrt(income_needs) * male_simple_effect, data = roi_symptoms)
+summary(mod_male_extern_income)
+confint(mod_male_extern_income)
+
+mod_male_extern_income_cov = 
+  lm(cbcl_externalizing ~ sqrt(income_needs) * male_simple_effect + white_effect_coded + Tanner + Age, data = roi_symptoms)
+summary(mod_male_extern_income_cov)
+confint(mod_male_extern_income_cov)
+
+summary(lm(cbcl_externalizing ~ sqrt(income_needs), data = roi_symptoms_male))
+
+summary(lm(cbcl_externalizing ~ sqrt(income_needs) + white_effect_coded + Tanner + Age, data = roi_symptoms_male))
+
+
+#females
+mod_female_extern_income = 
+  lm(cbcl_externalizing ~ sqrt(income_needs) * female_simple_effect, data = roi_symptoms)
+summary(mod_female_extern_income)
+confint(mod_female_extern_income)
+
+mod_female_extern_income_cov = 
+  lm(cbcl_externalizing ~ sqrt(income_needs) * female_simple_effect +  white_effect_coded + Tanner + Age, data = roi_symptoms)
+summary(mod_female_extern_income_cov)
+confint(mod_female_extern_income_cov)
+
+summary(lm(cbcl_externalizing ~ sqrt(income_needs), data = roi_symptoms_female))
+
+summary(lm(cbcl_externalizing ~ sqrt(income_needs) +  white_effect_coded + Tanner + Age, data = roi_symptoms_female))
+```
+
+##Internalizing
+```{r}
+#main effect
+mod_intern_income = lm(ysr_internalizing ~ sqrt(income_needs), data = roi_symptoms)
+
+summary(mod_intern_income)
+
+AIC(mod_intern_income)
+
+confint(mod_intern_income)
+
+#interaction with sex 
+mod_sex_intern_income = 
+  lm(ysr_internalizing ~ sqrt(income_needs) * sex_effect_coded, data = roi_symptoms)
+
+summary(mod_sex_intern_income)
+
+AIC(mod_sex_intern_income)
+
+confint(mod_sex_intern_income)
+
+#interaction with TBM covariates
+mod_sex_intern_income_cov = 
+  lm(ysr_internalizing ~ sqrt(income_needs) * sex_effect_coded + white_effect_coded + Tanner + Age, data = roi_symptoms)
+
+summary(mod_sex_intern_income_cov)
+
+confint(mod_sex_intern_income_cov)
+```
+
+##Visualize
+```{r}
+#externalizing 
+roi_symptoms %>%
+  mutate(
+    Sex = factor(
+      Male,
+      levels = c("0", "1"),
+      labels = c("Female", "Male")
+    )
+  ) %>% 
+  ggplot(aes(income_needs, cbcl_externalizing, color = fct_rev(Sex))) +
+  geom_point(size = 2) +
+  geom_vline(xintercept = 1, linetype = "dashed") +
+  geom_smooth(method = "lm", formula = y ~ sqrt(x), size = 2, se = FALSE) +
+  scale_y_continuous(breaks = seq(0, 30, 5)) +
+  scale_color_manual(values = c("blue", "red")) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    legend.text = element_text(size = 24),
+    axis.title = element_text(size = 28),
+    axis.text = element_text(size = 24)
+  ) +
+  labs(
+    color = NULL,
+    x = "Income-to-needs ratio",
+    y = "Externalizing symptoms"
+  )
+
+ggsave(
+  "~/Desktop/ELS/income_TBM/income_TBM_sync/plots/inr_sex_externalizing.jpeg",
+  width = 8,
+  height = 8
+  )
+```
+
+```{r}
+#internalizing 
+roi_symptoms %>%
+  mutate(
+    Sex = factor(
+      Male,
+      levels = c("0", "1"),
+      labels = c("Female", "Male")
+    )
+  ) %>% 
+  ggplot(aes(income_needs, ysr_internalizing, color = fct_rev(Sex))) +
+  geom_point(size = 2) +
+  geom_vline(xintercept = 1, linetype = "dashed") +
+  geom_smooth(method = "lm", formula = y ~ sqrt(x), size = 2, se = FALSE) +
+  scale_y_continuous(breaks = seq(0, 45, 5)) +
+  scale_color_manual(values = c("blue", "red")) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    legend.text = element_text(size = 24),
+    axis.title = element_text(size = 28),
+    axis.text = element_text(size = 24)
+  ) +
+  labs(
+    color = NULL,
+    x = "Income-to-needs ratio",
+    y = "Internalizing symptoms"
+  )
+
+ggsave(
+  "~/Desktop/ELS/income_TBM/income_TBM_sync/plots/inr_sex_internalizing.jpeg",
+  width = 8,
+  height = 8
+  )
+```
+
+##Visualize mediation
+```{r}
+roi_symptoms %>% 
+  filter(Male == 1) %>% 
+  ggplot(aes(income_needs, Neg_18)) +
+  geom_vline(xintercept = 1, linetype = "dashed") +
+  geom_point(size = 4, color = "blue", alpha = 1/2) +
+  geom_smooth(
+    method = "lm", 
+    formula = y ~ sqrt(x), 
+    se = FALSE, 
+    size = 3,
+    color = "blue"
+    ) +
+  theme_minimal() +
+  theme(
+    legend.text = element_text(size = 24),
+    axis.title = element_text(size = 28),
+    axis.text = element_text(size = 24)
+  ) +
+  labs(
+    x = "Income-to-needs ratio",
+    y = "Left MTG volume"
+  )
+
+ggsave(
+  "~/Desktop/ELS/income_TBM/income_TBM_sync/plots/inr_mtg_boys.jpeg",
+  width = 8,
+  height = 8
+  )
+```
+
+```{r}
+roi_symptoms %>% 
+  filter(Male == 1) %>% 
+  ggplot(aes(Neg_18, cbcl_externalizing)) +
+  geom_point(size = 4, color = "blue", alpha = 1/2) +
+  geom_smooth(
+    method = "lm", 
+    se = FALSE, 
+    size = 3,
+    color = "blue"
+    ) +
+  theme_minimal() +
+  theme(
+    legend.text = element_text(size = 24),
+    axis.title = element_text(size = 28),
+    axis.text = element_text(size = 24)
+  ) +
+  labs(
+    x = "Left MTG volume",
+    y = "Externalizing symptpms"
+  )
+
+
+ggsave(
+  "~/Desktop/ELS/income_TBM/income_TBM_sync/plots/mtg_extern_boys.jpeg",
+  width = 8,
+  height = 8
+  )
+```
+
+##Visualize hippocampus sex differences
+```{r}
+roi_symptoms %>%
+  mutate(
+    Sex = factor(
+      Male,
+      levels = c("0", "1"),
+      labels = c("Female", "Male")
+    )
+  ) %>% 
+  ggplot(aes(income_needs, Neg_39, color = fct_rev(Sex))) +
+  geom_point(size = 2) +
+  geom_vline(xintercept = 1, linetype = "dashed") +
+  geom_smooth(method = "lm", formula = y ~ sqrt(x), size = 2, se = FALSE) +
+  scale_color_manual(values = c("blue", "red")) +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    legend.text = element_text(size = 24),
+    axis.title = element_text(size = 28),
+    axis.text = element_text(size = 24)
+  ) +
+  labs(
+    color = NULL,
+    x = "Income-to-needs ratio",
+    y = "Left MTG/hippocampus/\nCGH volume"
+  )
+
+ggsave(
+  "~/Desktop/ELS/income_TBM/income_TBM_sync/plots/inr_sex_left_hipp.jpeg",
+  width = 8,
+  height = 8
+  )
+```
+
+##Sensitivity analyses
+
+###Compare sample to those missing brain data on symptoms
+```{r}
+symptoms_roi <-
+  haven::read_sav(t1_cbcl_file, user_na = 999) %>% 
+  mutate(
+    ELS_ID = as.integer(ELS_ID),
+    cbcl_externalizing = as.integer(
+      T1_CBCL_old_Externalizing_Problems_Total_Score
+    ),
+    cbcl_externalizing = if_else(
+      cbcl_externalizing == 999, NA_integer_, cbcl_externalizing
+    )
+  ) %>% 
+  select(ELS_ID, cbcl_externalizing) %>% 
+  left_join(
+    haven::read_sav(t1_ysr_file, user_na = 999) %>% 
+      mutate(
+        ELS_ID = as.integer(ELS_ID),
+        ysr_internalizing = as.integer(
+          T1_YSR_old_Internalizing_Problems_Total_Score
+        ),
+        ysr_internalizing = if_else(
+          ysr_internalizing == 999, NA_integer_, ysr_internalizing
+        )
+      ) %>% 
+      select(ELS_ID, ysr_internalizing),
+    by = "ELS_ID"
+  ) %>% 
+  left_join(
+    read_csv(covariates_file) %>% 
+      select(
+        ELS_ID,
+        included = ICV
+      ), 
+    by = "ELS_ID"
+  ) %>% 
+  mutate(
+    included = if_else(
+      !is.na(included), 
+      "included", "not"
+    )
+  )
+
+t.test(symptoms_roi$ysr_internalizing ~ symptoms_roi$included)
+t.test(symptoms_roi$cbcl_externalizing ~ symptoms_roi$included)
+```
+
+###linear effects of INR on externalizing symptoms 
+```{r}
+#linear main effect
+mod_extern_income_lin = lm(cbcl_externalizing ~ income_needs, data = roi_symptoms)
+
+summary(mod_extern_income_lin)
+
+AIC(mod_extern_income_lin)
+
+confint(mod_extern_income_lin)
+
+#linear interaction with sex
+mod_sex_extern_income_lin = 
+  lm(cbcl_externalizing ~ income_needs * sex_effect_coded, data = roi_symptoms)
+
+summary(mod_sex_extern_income_lin)
+
+AIC(mod_sex_extern_income_lin)
+
+confint(mod_sex_extern_income_lin)
+
+#simple effects
+
+#males
+mod_male_extern_income_lin = 
+  lm(cbcl_externalizing ~ income_needs * male_simple_effect, data = roi_symptoms)
+summary(mod_male_extern_income_lin)
+confint(mod_male_extern_income_lin)
+
+summary(lm(cbcl_externalizing ~ income_needs, data = roi_symptoms_male))
+
+#females
+mod_female_extern_income_lin = 
+  lm(cbcl_externalizing ~ income_needs * female_simple_effect, data = roi_symptoms)
+summary(mod_female_extern_income_lin)
+confint(mod_female_extern_income_lin)
+
+summary(lm(cbcl_externalizing ~ income_needs, data = roi_symptoms_female))
+```
+
+###linear effects of INR on internalizing symptoms 
+```{r}
+#linear main effect
+mod_intern_income_lin = lm(ysr_internalizing ~ income_needs, data = roi_symptoms)
+
+summary(mod_intern_income_lin)
+
+AIC(mod_intern_income_lin)
+
+confint(mod_intern_income_lin)
+
+#linear interaction with sex
+mod_sex_intern_income_lin = 
+  lm(ysr_internalizing ~ income_needs * sex_effect_coded, data = roi_symptoms)
+
+summary(mod_sex_intern_income_lin)
+
+AIC(mod_sex_intern_income_lin)
+
+confint(mod_sex_intern_income_lin)
+
+#simple effects
+
+#males
+mod_male_extern_income_lin = 
+  lm(cbcl_externalizing ~ income_needs * male_simple_effect, data = roi_symptoms)
+summary(mod_male_extern_income_lin)
+confint(mod_male_extern_income_lin)
+
+summary(lm(cbcl_externalizing ~ income_needs, data = roi_symptoms_male))
+
+#females
+mod_female_extern_income_lin = 
+  lm(cbcl_externalizing ~ income_needs * female_simple_effect, data = roi_symptoms)
+summary(mod_female_extern_income_lin)
+confint(mod_female_extern_income_lin)
+
+summary(lm(cbcl_externalizing ~ income_needs, data = roi_symptoms_female))
+```

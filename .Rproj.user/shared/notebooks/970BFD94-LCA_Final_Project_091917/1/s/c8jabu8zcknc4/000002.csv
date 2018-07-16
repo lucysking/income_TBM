@@ -1,0 +1,428 @@
+"0","```r
+#Hippocampus
+Hipp_Income <- lmer(Hippocampus ~ eICVcent + AgeCent + side + income_needsCent + (1|ELS_ID), REML = T, data=LCA_brain_lf_income)
+```"
+"1","Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+summary(Hipp_Income)
+```"
+"1","Some predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescaling
+"
+"1","Linear mixed model fit by REML t-tests use Satterthwaite approximations to degrees of
+  freedom [lmerMod]
+Formula: Hippocampus ~ eICVcent + AgeCent + side + income_needsCent +      (1 | ELS_ID)
+   Data: LCA_brain_lf_income
+
+REML criterion at convergence: 4514.2
+
+Scaled residuals: 
+     Min       1Q   Median       3Q      Max 
+-2.16023 -0.44365  0.02388  0.42931  1.92288 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ ELS_ID   (Intercept) 112070   334.8   
+ Residual              24640   157.0   
+Number of obs: 321, groups:  ELS_ID, 168
+
+Fixed effects:
+                   Estimate Std. Error         df t value Pr(>|t|)    
+(Intercept)       4.249e+03  2.736e+01  1.641e+02 155.284  < 2e-16 ***
+eICVcent          1.142e-03  1.752e-04  1.628e+02   6.519  8.5e-10 ***
+AgeCent           6.859e+01  2.663e+01  1.643e+02   2.576   0.0109 *  
+side1            -1.578e+01  8.935e+00  1.540e+02  -1.766   0.0794 .  
+income_needsCent  5.670e+01  5.083e+01  1.657e+02   1.115   0.2663    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+            (Intr) eICVcn AgeCnt side1 
+eICVcent    -0.008                     
+AgeCent      0.012 -0.160              
+side1       -0.016  0.001  0.003       
+incm_ndsCnt -0.054  0.054 -0.112 -0.005
+fit warnings:
+Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+AIC(Hipp_Income)
+```"
+"1","[1] 4528.151
+"
+"0","```r
+Hipp_Income_quad <- lmer(Hippocampus ~ eICVcent + AgeCent + side + income_needsCent + I(income_needsCent^2) + (1|ELS_ID), REML = T, data=LCA_brain_lf_income)
+```"
+"1","Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+summary(Hipp_Income_quad)
+```"
+"1","Some predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescaling
+"
+"1","Linear mixed model fit by REML t-tests use Satterthwaite approximations to degrees of
+  freedom [lmerMod]
+Formula: Hippocampus ~ eICVcent + AgeCent + side + income_needsCent +  
+    I(income_needsCent^2) + (1 | ELS_ID)
+   Data: LCA_brain_lf_income
+
+REML criterion at convergence: 4502.1
+
+Scaled residuals: 
+     Min       1Q   Median       3Q      Max 
+-2.14203 -0.45217  0.02093  0.42454  1.92633 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ ELS_ID   (Intercept) 112129   334.9   
+ Residual              24638   157.0   
+Number of obs: 321, groups:  ELS_ID, 168
+
+Fixed effects:
+                        Estimate Std. Error         df t value Pr(>|t|)    
+(Intercept)            4.280e+03  4.204e+01  1.621e+02 101.804  < 2e-16 ***
+eICVcent               1.113e-03  1.777e-04  1.618e+02   6.266 3.23e-09 ***
+AgeCent                7.209e+01  2.688e+01  1.632e+02   2.682  0.00808 ** 
+side1                 -1.567e+01  8.936e+00  1.550e+02  -1.754  0.08143 .  
+income_needsCent       2.070e+01  6.303e+01  1.643e+02   0.328  0.74297    
+I(income_needsCent^2) -1.013e+02  1.049e+02  1.647e+02  -0.966  0.33543    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+            (Intr) eICVcn AgeCnt side1  incm_C
+eICVcent    -0.132                            
+AgeCent      0.110 -0.179                     
+side1       -0.001 -0.001  0.004              
+incm_ndsCnt -0.477  0.141 -0.170 -0.011       
+I(ncm_nC^2) -0.759  0.166 -0.135 -0.012  0.591
+fit warnings:
+Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+AIC(Hipp_Income_quad)
+```"
+"1","[1] 4518.075
+"
+"0","```r
+Hipp_Income_cub <- lmer(Hippocampus ~ eICVcent + AgeCent + side + income_needsCent + I(income_needsCent^2) + I(NumTypeCent^3) + (1|ELS_ID), REML = T, data=LCA_brain_lf_income)
+```"
+"1","Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+summary(Hipp_Income_cub)
+```"
+"1","Some predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescaling
+"
+"1","Linear mixed model fit by REML t-tests use Satterthwaite approximations to degrees of
+  freedom [lmerMod]
+Formula: Hippocampus ~ eICVcent + AgeCent + side + income_needsCent +  
+    I(income_needsCent^2) + I(NumTypeCent^3) + (1 | ELS_ID)
+   Data: LCA_brain_lf_income
+
+REML criterion at convergence: 4503.2
+
+Scaled residuals: 
+     Min       1Q   Median       3Q      Max 
+-2.13239 -0.44974  0.02121  0.42527  1.91367 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ ELS_ID   (Intercept) 112684   335.7   
+ Residual              24642   157.0   
+Number of obs: 321, groups:  ELS_ID, 168
+
+Fixed effects:
+                        Estimate Std. Error         df t value Pr(>|t|)    
+(Intercept)            4.280e+03  4.214e+01  1.611e+02 101.562  < 2e-16 ***
+eICVcent               1.117e-03  1.782e-04  1.608e+02   6.265 3.27e-09 ***
+AgeCent                7.307e+01  2.701e+01  1.623e+02   2.705  0.00756 ** 
+side1                 -1.573e+01  8.937e+00  1.537e+02  -1.760  0.08037 .  
+income_needsCent       1.244e+01  6.523e+01  1.630e+02   0.191  0.84894    
+I(income_needsCent^2) -9.293e+01  1.064e+02  1.639e+02  -0.874  0.38367    
+I(NumTypeCent^3)      -1.027e-01  2.021e-01  1.614e+02  -0.508  0.61212    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+            (Intr) eICVcn AgeCnt side1  incm_C I(_C^2
+eICVcent    -0.132                                   
+AgeCent      0.109 -0.176                            
+side1       -0.001 -0.001  0.003                     
+incm_ndsCnt -0.458  0.128 -0.181 -0.008              
+I(ncm_nC^2) -0.752  0.169 -0.122 -0.014  0.527       
+I(NmTypC^3)  0.014 -0.034 -0.071  0.013  0.249 -0.155
+fit warnings:
+Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+AIC(Hipp_Income_cub)
+```"
+"1","[1] 4521.178
+"
+"0","```r
+Hipp_Educ<- lmer(Hippocampus ~ eICVcent + AgeCent + side + educ_ordCent + (1|ELS_ID), REML = T, data=LCA_brain_lf_income)
+```"
+"1","Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+summary(Hipp_Educ)
+```"
+"1","Some predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescaling
+"
+"1","Linear mixed model fit by REML t-tests use Satterthwaite approximations to degrees of
+  freedom [lmerMod]
+Formula: Hippocampus ~ eICVcent + AgeCent + side + educ_ordCent + (1 |      ELS_ID)
+   Data: LCA_brain_lf_income
+
+REML criterion at convergence: 4515.5
+
+Scaled residuals: 
+     Min       1Q   Median       3Q      Max 
+-2.15581 -0.44330  0.01746  0.43597  1.91332 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ ELS_ID   (Intercept) 111920   334.5   
+ Residual              24640   157.0   
+Number of obs: 321, groups:  ELS_ID, 168
+
+Fixed effects:
+               Estimate Std. Error         df t value Pr(>|t|)    
+(Intercept)   4.248e+03  2.740e+01  1.640e+02 155.023  < 2e-16 ***
+eICVcent      1.141e-03  1.750e-04  1.627e+02   6.521 8.41e-10 ***
+AgeCent       6.461e+01  2.714e+01  1.645e+02   2.380   0.0184 *  
+side1        -1.582e+01  8.936e+00  1.552e+02  -1.770   0.0787 .  
+educ_ordCent  2.798e+01  2.333e+01  1.633e+02   1.199   0.2321    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+            (Intr) eICVcn AgeCnt side1 
+eICVcent    -0.009                     
+AgeCent      0.024 -0.161              
+side1       -0.015  0.001  0.004       
+educ_ordCnt -0.083  0.047 -0.225 -0.008
+fit warnings:
+Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+AIC(Hipp_Educ)
+```"
+"1","[1] 4529.515
+"
+"0","```r
+#Amygdala
+Amyg_Income <- lmer(Amygdala ~ eICVcent + AgeCent + side + income_needsCent + (1|ELS_ID), REML = T, data=LCA_brain_lf_income)
+```"
+"1","Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+summary(Amyg_Income)
+```"
+"1","Some predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescaling
+"
+"1","Linear mixed model fit by REML t-tests use Satterthwaite approximations to degrees of
+  freedom [lmerMod]
+Formula: Amygdala ~ eICVcent + AgeCent + side + income_needsCent + (1 |      ELS_ID)
+   Data: LCA_brain_lf_income
+
+REML criterion at convergence: 4294.9
+
+Scaled residuals: 
+     Min       1Q   Median       3Q      Max 
+-2.63404 -0.53405 -0.01825  0.48204  2.54164 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ ELS_ID   (Intercept) 22092    148.6   
+ Residual             14015    118.4   
+Number of obs: 329, groups:  ELS_ID, 168
+
+Fixed effects:
+                  Estimate Std. Error        df t value Pr(>|t|)    
+(Intercept)      1.506e+03  1.324e+01 1.631e+02 113.725  < 2e-16 ***
+eICVcent         5.407e-04  8.509e-05 1.641e+02   6.354 1.98e-09 ***
+AgeCent          3.888e+01  1.290e+01 1.638e+02   3.015  0.00298 ** 
+side1            4.311e+01  6.571e+00 1.613e+02   6.560 6.96e-10 ***
+income_needsCent 3.556e+01  2.456e+01 1.640e+02   1.448  0.14964    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+            (Intr) eICVcn AgeCnt side1 
+eICVcent    -0.008                     
+AgeCent      0.014 -0.159              
+side1        0.013 -0.001  0.009       
+incm_ndsCnt -0.059  0.056 -0.110 -0.015
+fit warnings:
+Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+AIC(Amyg_Income)
+```"
+"1","[1] 4308.908
+"
+"0","```r
+Amyg_Income_quad <- lmer(Amygdala ~ eICVcent + AgeCent + side + income_needsCent + I(income_needsCent^2) +  (1|ELS_ID), REML = T, data=LCA_brain_lf_income)
+```"
+"1","Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+summary(Amyg_Income_quad)
+```"
+"1","Some predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescaling
+"
+"1","Linear mixed model fit by REML t-tests use Satterthwaite approximations to degrees of
+  freedom [lmerMod]
+Formula: 
+Amygdala ~ eICVcent + AgeCent + side + income_needsCent + I(income_needsCent^2) +  
+    (1 | ELS_ID)
+   Data: LCA_brain_lf_income
+
+REML criterion at convergence: 4285.2
+
+Scaled residuals: 
+     Min       1Q   Median       3Q      Max 
+-2.62642 -0.52059 -0.00781  0.47364  2.54997 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ ELS_ID   (Intercept) 22269    149.2   
+ Residual             14012    118.4   
+Number of obs: 329, groups:  ELS_ID, 168
+
+Fixed effects:
+                        Estimate Std. Error         df t value Pr(>|t|)    
+(Intercept)            1.509e+03  2.044e+01  1.624e+02  73.831  < 2e-16 ***
+eICVcent               5.376e-04  8.648e-05  1.627e+02   6.217 4.11e-09 ***
+AgeCent                3.929e+01  1.306e+01  1.631e+02   3.008  0.00305 ** 
+side1                  4.312e+01  6.571e+00  1.619e+02   6.563 6.80e-10 ***
+income_needsCent       3.150e+01  3.058e+01  1.633e+02   1.030  0.30440    
+I(income_needsCent^2) -1.134e+01  5.077e+01  1.625e+02  -0.223  0.82358    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+            (Intr) eICVcn AgeCnt side1  incm_C
+eICVcent    -0.128                            
+AgeCent      0.115 -0.178                     
+side1        0.014 -0.003  0.009              
+incm_ndsCnt -0.481  0.140 -0.170 -0.017       
+I(ncm_nC^2) -0.760  0.161 -0.140 -0.008  0.592
+fit warnings:
+Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+AIC(Amyg_Income_quad)
+```"
+"1","[1] 4301.168
+"
+"0","```r
+Amyg_Income_cub <- lmer(Amygdala ~ eICVcent + AgeCent + side + income_needsCent + I(income_needsCent^2) +  I(NumTypeCent^3) + (1|ELS_ID), REML = T, data=LCA_brain_lf_income)
+```"
+"1","Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+summary(Amyg_Income_cub)
+```"
+"1","Some predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescaling
+"
+"1","Linear mixed model fit by REML t-tests use Satterthwaite approximations to degrees of
+  freedom [lmerMod]
+Formula: 
+Amygdala ~ eICVcent + AgeCent + side + income_needsCent + I(income_needsCent^2) +  
+    I(NumTypeCent^3) + (1 | ELS_ID)
+   Data: LCA_brain_lf_income
+
+REML criterion at convergence: 4287.8
+
+Scaled residuals: 
+     Min       1Q   Median       3Q      Max 
+-2.63384 -0.53535 -0.01377  0.47199  2.54278 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ ELS_ID   (Intercept) 22429    149.8   
+ Residual             14010    118.4   
+Number of obs: 329, groups:  ELS_ID, 168
+
+Fixed effects:
+                        Estimate Std. Error         df t value Pr(>|t|)    
+(Intercept)            1.509e+03  2.050e+01  1.615e+02  73.620  < 2e-16 ***
+eICVcent               5.391e-04  8.680e-05  1.620e+02   6.211 4.26e-09 ***
+AgeCent                3.960e+01  1.312e+01  1.619e+02   3.018  0.00296 ** 
+side1                  4.312e+01  6.571e+00  1.613e+02   6.562 6.89e-10 ***
+income_needsCent       2.847e+01  3.166e+01  1.620e+02   0.899  0.36985    
+I(income_needsCent^2) -8.334e+00  5.151e+01  1.616e+02  -0.162  0.87166    
+I(NumTypeCent^3)      -3.788e-02  9.853e-02  1.630e+02  -0.384  0.70117    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+            (Intr) eICVcn AgeCnt side1  incm_C I(_C^2
+eICVcent    -0.128                                   
+AgeCent      0.114 -0.174                            
+side1        0.014 -0.003  0.009                     
+incm_ndsCnt -0.463  0.124 -0.180 -0.015              
+I(ncm_nC^2) -0.753  0.166 -0.128 -0.008  0.529       
+I(NmTypC^3)  0.015 -0.045 -0.063  0.005  0.249 -0.152
+fit warnings:
+Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+AIC(Amyg_Income_cub)
+```"
+"1","[1] 4305.82
+"
+"0","```r
+Amyg_Educ<- lmer(Amygdala ~ eICVcent + AgeCent + side + educ_ordCent + (1|ELS_ID), REML = T, data=LCA_brain_lf_income)
+```"
+"1","Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+summary(Amyg_Educ)
+```"
+"1","Some predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescaling
+"
+"1","Linear mixed model fit by REML t-tests use Satterthwaite approximations to degrees of
+  freedom [lmerMod]
+Formula: Amygdala ~ eICVcent + AgeCent + side + educ_ordCent + (1 | ELS_ID)
+   Data: LCA_brain_lf_income
+
+REML criterion at convergence: 4297.5
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-2.6129 -0.5326 -0.0207  0.4654  2.5667 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ ELS_ID   (Intercept) 22307    149.4   
+ Residual             14006    118.3   
+Number of obs: 329, groups:  ELS_ID, 168
+
+Fixed effects:
+              Estimate Std. Error        df t value Pr(>|t|)    
+(Intercept)  1.506e+03  1.331e+01 1.631e+02 113.125  < 2e-16 ***
+eICVcent     5.378e-04  8.535e-05 1.642e+02   6.301 2.61e-09 ***
+AgeCent      3.799e+01  1.319e+01 1.638e+02   2.880   0.0045 ** 
+side1        4.324e+01  6.568e+00 1.616e+02   6.583 6.13e-10 ***
+educ_ordCent 1.141e+01  1.133e+01 1.623e+02   1.007   0.3153    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+            (Intr) eICVcn AgeCnt side1 
+eICVcent    -0.009                     
+AgeCent      0.025 -0.160              
+side1        0.012 -0.001  0.007       
+educ_ordCnt -0.083  0.046 -0.221 -0.003
+fit warnings:
+Some predictor variables are on very different scales: consider rescaling
+"
+"0","```r
+AIC(Amyg_Educ)
+```"
+"1","[1] 4311.532
+"

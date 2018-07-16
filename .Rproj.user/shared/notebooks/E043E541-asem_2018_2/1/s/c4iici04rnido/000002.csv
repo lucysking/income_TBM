@@ -1,0 +1,22 @@
+"0","```r
+hc_wf$dis_SF <- rowMeans(subset(hc_wf, select = c(distress.SF1, distress.SF2)), na.rm = T)
+hc_wf$dist_reac <- + hc_wf$dis_SF - + hc_wf$distress.P
+hc_wf$cort_respond_grp <- relevel(hc_wf$cort_respond_grp, ref = \"nochanger\")
+distress1 <- multinom(cort_respond_grp ~ sleepquality.2, data = hc_wf)
+summary(distress1)
+z_distress1 <- summary(distress1)$coefficients/summary(distress1)$standard.errors
+p_distress1 <- (1 - pnorm(abs(z_distress1), 0, 1)) * 2
+p_distress1
+exp(coef(distress1))
+exp(confint(distress1))
+
+cort_affect <- hc_wf %>%
+  group_by(cort_respond_grp) %>%
+  summarise(
+    dis_M = mean(distress_M, na.rm = T),
+    dis_reac_M = mean(dist_reac, na.rm = T),
+    dis_SF_M = mean(dis_SF, na.rm = T)
+  )
+cort_affect <- na.omit(cort_affect)
+cor.test(hc_wf$sens_M, hc_wf$cort_trim.2)
+```"

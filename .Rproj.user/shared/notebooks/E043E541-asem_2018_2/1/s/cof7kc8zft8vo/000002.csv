@@ -1,0 +1,30 @@
+"0","```r
+
+hc_wf$cort_respond_grp <- relevel(hc_wf$cort_respond_grp, ref = \"decreaser\")
+NEG1 <- multinom(cort_respond_grp ~ NEG, data = hc_wf)
+summary(NEG1)
+z_NEG1 <- summary(NEG1)$coefficients/summary(NEG1)$standard.errors
+p_NEG1 <- (1 - pnorm(abs(z_NEG1), 0, 1)) * 2
+p_NEG1
+exp(coef(NEG1))
+exp(confint(NEG1))
+
+pR2(NEG1) #McFadden R^2 index; values between .2 and .4 indicate excellent model fit
+
+
+png(filename=\"/Users/lucyking/Desktop/BABIES/plots/decVinc_NEG.png\", width = 600, height = 500)
+ggplot(subset(hc_wf, !is.na(incVdec)), aes(x=NEG, y=incVdec)) + geom_point(position=position_jitter(height=0.03, width=0)) + 
+  stat_smooth(method=\"glm\", method.args=list(family=\"binomial\"), formula = y~x, se=FALSE, size = 4, color = \"springgreen3\" ) +
+  ylab(\"Pr (Increaser)\") +
+  xlab(\"Infant Negative Affectivity\") +
+  theme_bw() +
+  theme(
+          panel.grid.major = element_blank(),
+          axis.title.x = element_text(size = 24),
+          axis.title.y = element_text(size = 24),
+          axis.text.x = element_text(size = 18),
+          axis.text.y = element_text(size = 18),
+          plot.title = element_text(size = 24)) +
+  ggtitle(\"OR = 3.92 (.94, 16.37), p = .06\")
+  
+```"

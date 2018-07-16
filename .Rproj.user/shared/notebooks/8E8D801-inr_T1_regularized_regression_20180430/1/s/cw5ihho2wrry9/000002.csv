@@ -1,0 +1,49 @@
+"0","```r
+final_predictors %>% 
+  mutate(
+    predictor_variables = factor(
+      predictor_variables,
+      levels = c(
+        \"Neg_18\", 
+        \"Pos_8\", 
+        \"Neg_38_Neg_31_Neg_26\",
+        \"Pos_28\", 
+        \"Neg_35\"
+      ),
+      labels = c(
+        \"+ L MTG\", 
+        \"+ R SFG\", 
+        \"+ R Putamen,\nR Fusiform gyrus,\nR MFG\",
+        \"+ Cerebellar vermis\",
+        \"+ L Posterior thalamic radiation\"
+      )
+    )
+  ) %>% 
+  ggplot(aes(step_n, deviance_ratio)) +
+  geom_smooth(se = FALSE, color = \"darkgrey\") +
+  geom_point(
+    aes(
+      color = predictor_variables
+    ),
+    size = 5
+  ) +
+  scale_y_continuous(
+    breaks = seq(.02,.24, .02),
+    labels = scales::percent
+  ) +
+  scale_x_continuous(
+    breaks = c(1:6)
+  ) +
+  theme_minimal() +
+  theme(
+    #legend.position = \"bottom\",
+    axis.title = element_text(size = 28),
+    axis.text = element_text(size = 22),
+    legend.text = element_text(size = 22)
+  ) +
+  labs(
+    color = NULL,
+    x = \"Model step\",
+    y = \"% Deviance explained\"
+  )
+```"

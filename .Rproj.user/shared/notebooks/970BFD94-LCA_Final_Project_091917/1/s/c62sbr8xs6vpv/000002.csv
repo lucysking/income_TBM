@@ -1,0 +1,20 @@
+"0","```r
+class_descriptives$BIhipp_CI_lo <- c(3902,4082,4221)
+class_descriptives$BIhipp_CI_hi <- c(4233,4320,4372)
+class_descriptives$LHipp_CI_lo <- c(3905, 4094, 4242)
+class_descriptives$LHipp_CI_hi <- c(4265, 4328, 4408)
+class_descriptives$RHipp_CI_lo <- c(3910, 4043, 4199)
+class_descriptives$RHipp_CI_hi <- c(4261, 4300, 4350)
+png(filename=\"/Users/lucyking/Desktop/LCA_Final_Project/Revision_Sept2017/Plots/BIHipp.png\", width = 600, height = 500)
+  ggplot(data = class_descriptives, aes(x = Class, y = M_BIhipp)) +
+  geom_pointrange(aes(ymin = BIhipp_CI_lo, ymax = BIhipp_CI_hi, color = Class), size=1.5) +
+  ylim(3500, 5000) +
+  theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),
+  axis.title.x=element_blank(), panel.background = element_rect(fill = \"white\"), panel.grid.minor = element_line(colour = \"dark gray\"), panel.grid.major = element_blank(), legend.title=element_text(size=25), legend.text = element_text(size=25), legend.key.height=unit(2,\"line\"),axis.title.y = element_text(size=25), axis.text.y = element_text(size = 22))+
+  labs(y = expression(\"Mean Bilateral Hippocampal Volume\"~(mm^3)))+
+  scale_color_manual(values=c(\"black\", \"gray60\", \"ivory3\"), labels=c(\"Direct Victimization\", \"Family Instability\", \"Typical/Low\"))
+dev.off()
+```"
+"1","null device 
+          1 
+"

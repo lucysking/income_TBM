@@ -1,0 +1,22 @@
+"0","```r
+cor.test(hc_wf$sens_M, hc_wf$posreg_M)
+
+png(filename=\"/Users/lucyking/Desktop/BABIES/plots/sens_posreg.png\", width = 600, height = 500)
+ggplot(hc_wf, aes(x = sens_M, y = posreg_M)) +
+  geom_point(size = 2) +
+  geom_smooth(method = \"lm\", colour = \"purple\", size = 2) +
+  theme_bw() +
+  theme(
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(), 
+          axis.title.x = element_text(size = 24),
+          axis.title.y = element_text(size = 24),
+          axis.text.x = element_text(size = 18),
+          axis.text.y = element_text(size = 18),
+          plot.title = element_text(size = 24)) +
+  ylab(\"Maternal Warmth\") +
+  xlab(\"Maternal Sensitivity\")
+
+
+  
+```"

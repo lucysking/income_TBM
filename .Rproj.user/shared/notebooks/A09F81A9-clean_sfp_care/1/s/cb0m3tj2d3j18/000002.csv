@@ -1,0 +1,26 @@
+"0","```r
+sfp_mean <- sfp_av %>%
+  group_by(Episode) %>%
+  summarise(
+    sens = mean(sens_M, na.rm =T),
+    sens_sd = sd(sens_M, na.rm =T),
+    sens_se = sens_sd/sqrt(length(!is.na(sens_M))),
+    sens_se_upper = sens + sens_se,
+    sens_se_lower = sens - sens_se,
+    intrus = mean(intrus_M, na.rm =T),
+    intrus_sd = sd(intrus_M, na.rm =T),
+    intrus_se = intrus_sd/sqrt(length(!is.na(intrus_M))),
+    intrus_se_upper = intrus + intrus_se,
+    intrus_se_lower = intrus - intrus_se,
+    detach = mean(detach_M, na.rm =T),
+    detach_sd = sd(detach_M, na.rm =T),
+    detach_se = detach_sd/sqrt(length(!is.na(detach_M))),
+    detach_se_upper = detach + detach_se,
+    detach_se_lower = detach - detach_se,
+    posreg = mean(posreg_M, na.rm =T),
+    posreg_sd = sd(posreg_M, na.rm =T),
+    posreg_se = posreg_sd/sqrt(length(!is.na(posreg_M))),
+    posreg_se_upper = posreg + posreg_se,
+    posreg_se_lower = posreg - posreg_se
+  )
+```"

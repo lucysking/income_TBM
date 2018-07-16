@@ -1,0 +1,5 @@
+"0","demo <-"
+"0","  haven::read_sav(demographic_file) %>% "
+"0","  filter(I2N != ""NA"") %>% "
+"0","  mutate(I2N = as.numeric(I2N)) %>% "
+"0","  rename(ELS_ID = Sub)"

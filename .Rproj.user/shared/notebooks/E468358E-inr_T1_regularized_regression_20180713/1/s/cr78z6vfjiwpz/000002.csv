@@ -1,0 +1,6 @@
+"0","# make a MATRIX (not a dataframe!) of our predictors"
+"0","predictors = scale(inc_rr_boys[1:50], scale = TRUE)"
+"0","#predictors = as.matrix(inc_rr_boys[1:50])"
+"0","# make a VECTOR (not a variable in a dataframe!) of our outcome "
+"0","externalizing = z_score(inc_rr_boys$externalizing)"
+"0","#externalizing = inc_rr_boys$externalizing"

@@ -1,0 +1,6 @@
+"0","```r
+epds1 <- multinom(cort_respond_grp ~  epds_log, data = hc_wf)
+
+```"
+"1","Error in qr.default(X) : NA/NaN/Inf in foreign function call (arg 1)
+"

@@ -1,0 +1,8 @@
+"0","```r
+LCA$BIhipp <- ifelse(!is.na(LCA$LeftHippocampus) & !is.na(LCA$RightHippocampus), (LCA$LeftHippocampus+LCA$RightHippocampus)/2, NA)
+LCA$BIhipp <- ifelse(is.na(LCA$LeftHippocampus) & !is.na(LCA$RightHippocampus), LCA$RightHippocampus, LCA$BIhipp)
+LCA$BIhipp <- ifelse(!is.na(LCA$LeftHippocampus) & is.na(LCA$RightHippocampus), LCA$LeftHippocampus, LCA$BIhipp)
+LCA$BIamyg <- ifelse(!is.na(LCA$LeftAmygdala) & !is.na(LCA$RightAmygdala), (LCA$LeftAmygdala+LCA$RightAmygdala)/2, NA)
+LCA$BIamyg <- ifelse(is.na(LCA$LeftAmygdala) & !is.na(LCA$RightAmygdala), LCA$RightAmygdala, LCA$BIamyg)
+LCA$BIamyg <- ifelse(!is.na(LCA$LeftAmygdala) & is.na(LCA$RightAmygdala), LCA$LeftAmygdala, LCA$BIamyg)
+```"

@@ -1,0 +1,5 @@
+"0","df %>%"
+"0","  ggplot() +"
+"0","  geom_smooth(aes(x = log(carat), y = log(price), color = clarity), "
+"0","              method = ""loess"") +"
+"0","  guides(color = guide_legend(reverse = TRUE))"

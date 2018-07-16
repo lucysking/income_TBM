@@ -1,0 +1,6 @@
+"0","```r
+#visualize data within reunions only
+ggplot(sfp_wf, aes(x = sensR_M)) + #slightly negatively skewed
+  geom_histogram(bins = 30, position = \"dodge\", fill= \"gray\", color = \"black\") +
+  theme_bw() 
+```"

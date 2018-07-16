@@ -1,0 +1,51 @@
+"0","```r
+##extract predictor column names 
+predictor_variables  <-
+  tibble(
+    predictor_variables = colnames(predictors)
+  ) %>% 
+  mutate(
+    predictor_sequence = c(1:n()) - 1
+  ) 
+      
+##join with coefficients by model object sequence number
+fit_inc_coefficients <-
+  tibble(
+    predictor_sequence = fit_inc_boys[[\"beta\"]]@i,
+    coeff = fit_inc_boys[[\"beta\"]]@x
+  ) %>% 
+  left_join(predictor_variables, by = \"predictor_sequence\") %>% 
+  mutate(
+    row_id = c(1:n())
+  ) 
+
+##extract deviance explained
+deviance_explained_df   <- 
+  tibble(
+    steps = fit_inc_boys[[\"beta\"]]@Dimnames[[2]],
+    n_predictors = fit_inc_boys[[\"df\"]],
+    deviance_ratio = fit_inc_boys[[\"dev.ratio\"]],
+    lambda = fit_inc_boys[[\"lambda\"]]
+  ) %>% 
+  mutate(
+    step_n = c(1:n()) - 1
+  ) %>% 
+  filter(lambda >= inc_lambdas_summary$SE_median)
+
+##final predictors with %deviance explained by step in model
+final_predictors <-
+  fit_inc_coefficients %>% 
+  distinct(predictor_sequence, predictor_variables) %>% 
+  mutate(
+    n_predictors = c(1:n()) 
+  ) %>% 
+  filter(n_predictors <= 7) %>% 
+  left_join(deviance_explained_df, by = \"n_predictors\") %>% 
+  mutate(
+    predictor_variables = fct_collapse(
+      predictor_variables,
+      Neg_38_Neg_31_Neg_26 = c(\"Neg_38\", \"Neg_31\", \"Neg_26\")
+    )
+  ) %>% 
+  na.omit()
+```"

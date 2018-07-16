@@ -1,0 +1,12 @@
+"0","```r
+png(filename=\"/Users/lucyking/Desktop/BABIES/plots/detach_Episode.png\", width = 800, height = 600)
+detach_ep <- ggplot(data = sfp_mean, aes(x = Episode, y = detach)) +
+  geom_bar(stat = \"identity\", aes(fill = Episode)) +
+  geom_errorbar(aes(ymin = detach_se_lower, ymax = detach_se_upper)) +
+  ylab(\"Detachment\") +
+  xlab(\"SFP-R Episode\") +
+  scale_fill_brewer(palette=\"GnBu\") +
+  theme_bw() + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank(), axis.title.x=element_blank(),axis.text.y  = element_text(size=24), axis.title.y = element_text(size=30),legend.title=element_text(size=24), legend.text=element_text(size=20))
+detach_ep
+```"

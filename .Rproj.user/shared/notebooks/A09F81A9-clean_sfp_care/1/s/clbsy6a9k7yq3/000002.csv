@@ -1,0 +1,6 @@
+"0","```r
+#visualize means across episodes
+ggplot(sfp_wf, aes(x = sens_M)) + #normally distributed
+  geom_histogram(bins = 30, position = \"dodge\", fill= \"gray\", color = \"black\") +
+  theme_bw() 
+```"

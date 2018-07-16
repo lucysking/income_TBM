@@ -1,0 +1,15 @@
+"0","```r
+png(filename=\"/Users/lucyking/Desktop/LCA_Final_Project/Revision_Sept2017/Plots/BIHipp_Adj.png\", width = 600, height = 500)
+  ggplot(data = plot_adjust, aes(x = Class, y = AdjMean)) +
+  geom_pointrange(aes(ymin = LowerCI, ymax = UpperCI, color = Class), size=1.5) +
+  ylim(3500, 5000) +
+  theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(),
+  axis.title.x=element_blank(), panel.background = element_rect(fill = \"white\"), panel.grid.minor = element_line(colour = \"dark gray\"), panel.grid.major = element_blank(), legend.title=element_text(size=25), legend.text = element_text(size=25), legend.key.height=unit(2,\"line\"),axis.title.y = element_text(size=25), axis.text.y = element_text(size = 22))+
+  labs(y = expression(\"Adjusted Mean Hippocampal Volume\"~(mm^3)))+
+  scale_color_manual(values=c(\"black\", \"gray60\", \"ivory3\"), labels=c(\"Direct Victimization\", \"Family Instability\", \"Typical/Low\"))
+dev.off()
+
+```"
+"1","null device 
+          1 
+"

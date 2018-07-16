@@ -1,0 +1,8 @@
+"0","```r
+library(corrplot)
+# plot correlations
+corr_d <- sfp_wf[,2:21]
+corr_d <- cor(corr_d, use = \"pairwise.complete.obs\")
+png(filename=\"/Users/lucyking/Desktop/BABIES/plots/care_corr.png\", width = 800, height = 800)
+corrplot <- corrplot(corr_d, order = \"hclust\", tl.col='black', tl.cex=.75)
+```"

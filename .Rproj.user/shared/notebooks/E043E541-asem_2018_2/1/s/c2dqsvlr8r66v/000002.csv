@@ -1,0 +1,56 @@
+"0","```r
+hc_wf$sAA_AUCg_B
+hc_wf$cort_respond_grp <- relevel(hc_wf$cort_respond_grp, ref = \"increaser\")
+empath1 <- multinom(cort_respond_grp ~ sAA_reac_B, data = hc_wf)
+summary(empath1)
+z_empath1 <- summary(empath1)$coefficients/summary(empath1)$standard.errors
+p_empath1 <- (1 - pnorm(abs(z_empath1), 0, 1)) * 2
+p_empath1
+exp(coef(empath1))
+pR2(empath1) #McFadden R^2 index; values between .2 and .4 indicate excellent model fit
+
+hc_wf$cort_respond_grp <- relevel(hc_wf$cort_respond_grp, ref = \"increaser\")
+persp1 <- multinom(cort_respond_grp ~ persp, data = hc_wf)
+summary(persp1)
+z_persp1 <- summary(persp1)$coefficients/summary(persp1)$standard.errors
+p_persp1 <- (1 - pnorm(abs(z_persp1), 0, 1)) * 2
+p_persp1
+exp(coef(persp1))
+pR2(persp1) #McFadden R^2 index; values between .2 and .4 indicate excellent model fit
+
+hc_wf$cort_respond_grp <- relevel(hc_wf$cort_respond_grp, ref = \"increaser\")
+perdis1 <- multinom(cort_respond_grp ~ perdis, data = hc_wf)
+summary(perdis1)
+z_perdis1 <- summary(perdis1)$coefficients/summary(perdis1)$standard.errors
+p_perdis1 <- (1 - pnorm(abs(z_perdis1), 0, 1)) * 2
+p_perdis1
+exp(coef(perdis1))
+pR2(perdis1) #McFadden R^2 index; values between .2 and .4 indicate excellent model fit
+
+ggplot(subset(hc_wf, !is.na(nochVinc)), aes(x=empath, y=nochVinc)) + geom_point() + 
+  stat_smooth(method=\"glm\", method.args=list(family=\"binomial\"), se=FALSE, size = 4, color = \"red\") +
+  ylab(\"Probability\") +
+  xlab(\"Maternal Empathy\") +
+  theme(
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(), 
+          axis.title.x = element_text(size = 24),
+          axis.title.y = element_text(size = 24),
+          axis.text.x = element_text(size = 18),
+          axis.text.y = element_text(size = 18)) +
+  ggtitle(\"No-changer (0) vs. Increaser (1)\")
+
+
+ggplot(subset(hc_wf, !is.na(incVdec)), aes(x=empath, y=incVdec)) + geom_point() + 
+  stat_smooth(method=\"glm\", method.args=list(family=\"binomial\"), se=FALSE, size = 4, color = \"darkgray\") +
+  ylab(\"Probability\") +
+  xlab(\"Maternal Empathy\") +
+  theme(
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(), 
+          axis.title.x = element_text(size = 24),
+          axis.title.y = element_text(size = 24),
+          axis.text.x = element_text(size = 18),
+          axis.text.y = element_text(size = 18)) +
+  ggtitle(\"Decreaser (0) vs. Increaser (1)\")
+```"

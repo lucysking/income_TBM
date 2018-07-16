@@ -1,0 +1,114 @@
+"0","```r
+#Left
+contrasts(LCA$Class)=cbind(IvV=c(0,1,0), SvV=c(0,0,1))
+LeftHipp_Class1 <- lm(LeftHippocampus ~ eICVcent + AgeCent + Class, data=LCA)
+summary(LeftHipp_Class1)
+```"
+"1","
+Call:
+lm(formula = LeftHippocampus ~ eICVcent + AgeCent + Class, data = LCA)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1175.37  -229.88   -20.76   259.29   903.10 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 4.075e+03  8.023e+01  50.793  < 2e-16 ***
+eICVcent    1.071e-03  1.755e-04   6.100  7.3e-09 ***
+AgeCent     5.576e+01  2.813e+01   1.982   0.0491 *  
+ClassIvV    1.414e+02  9.765e+01   1.448   0.1495    
+ClassSvV    2.280e+02  8.850e+01   2.576   0.0109 *  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 376.2 on 165 degrees of freedom
+  (41 observations deleted due to missingness)
+Multiple R-squared:  0.2514,	Adjusted R-squared:  0.2332 
+F-statistic: 13.85 on 4 and 165 DF,  p-value: 9.199e-10
+"
+"0","```r
+contrasts(LCA$Class)=cbind(VvS=c(1,0,0), IvS=c(0,1,0))
+LeftHipp_Class2 <- lm(LeftHippocampus ~ eICVcent + AgeCent + Class, data=LCA)
+summary(LeftHipp_Class2)
+```"
+"1","
+Call:
+lm(formula = LeftHippocampus ~ eICVcent + AgeCent + Class, data = LCA)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1175.37  -229.88   -20.76   259.29   903.10 
+
+Coefficients:
+              Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  4.303e+03  3.731e+01 115.341  < 2e-16 ***
+eICVcent     1.071e-03  1.755e-04   6.100  7.3e-09 ***
+AgeCent      5.576e+01  2.813e+01   1.982   0.0491 *  
+ClassVvS    -2.280e+02  8.850e+01  -2.576   0.0109 *  
+ClassIvS    -8.657e+01  6.703e+01  -1.292   0.1983    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 376.2 on 165 degrees of freedom
+  (41 observations deleted due to missingness)
+Multiple R-squared:  0.2514,	Adjusted R-squared:  0.2332 
+F-statistic: 13.85 on 4 and 165 DF,  p-value: 9.199e-10
+"
+"0","```r
+#Right
+contrasts(LCA$Class)=cbind(IvV=c(0,1,0), SvV=c(0,0,1))
+RightHipp_Class1 <- lm(RightHippocampus ~ eICVcent + AgeCent + Class, data=LCA)
+summary(RightHipp_Class1)
+```"
+"1","
+Call:
+lm(formula = RightHippocampus ~ eICVcent + AgeCent + Class, data = LCA)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-973.48 -215.75   37.12  217.16  977.95 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 4.077e+03  7.920e+01  51.474  < 2e-16 ***
+eICVcent    1.120e-03  1.676e-04   6.681 3.04e-10 ***
+AgeCent     6.319e+01  2.653e+01   2.382   0.0183 *  
+ClassIvV    9.932e+01  9.568e+01   1.038   0.3007    
+ClassSvV    1.856e+02  8.624e+01   2.153   0.0327 *  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 362.8 on 175 degrees of freedom
+  (31 observations deleted due to missingness)
+Multiple R-squared:  0.2658,	Adjusted R-squared:  0.249 
+F-statistic: 15.84 on 4 and 175 DF,  p-value: 4.39e-11
+"
+"0","```r
+contrasts(LCA$Class)=cbind(VvS=c(1,0,0), IvS=c(0,1,0))
+RightHipp_Class2 <- lm(RightHippocampus ~ eICVcent + AgeCent + Class, data=LCA)
+summary(RightHipp_Class2)
+```"
+"1","
+Call:
+lm(formula = RightHippocampus ~ eICVcent + AgeCent + Class, data = LCA)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-973.48 -215.75   37.12  217.16  977.95 
+
+Coefficients:
+              Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  4.262e+03  3.415e+01 124.813  < 2e-16 ***
+eICVcent     1.120e-03  1.676e-04   6.681 3.04e-10 ***
+AgeCent      6.319e+01  2.653e+01   2.382   0.0183 *  
+ClassVvS    -1.856e+02  8.624e+01  -2.153   0.0327 *  
+ClassIvS    -8.631e+01  6.359e+01  -1.357   0.1764    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 362.8 on 175 degrees of freedom
+  (31 observations deleted due to missingness)
+Multiple R-squared:  0.2658,	Adjusted R-squared:  0.249 
+F-statistic: 15.84 on 4 and 175 DF,  p-value: 4.39e-11
+"

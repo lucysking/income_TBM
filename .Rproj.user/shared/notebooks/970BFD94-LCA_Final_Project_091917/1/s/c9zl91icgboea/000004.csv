@@ -1,0 +1,20 @@
+"0","```r
+LCA$income_needs_fac <- ifelse(LCA$income_needs <=1, \"low\", \"not\")
+incomeSC_tbl <- table(LCA$income_needs_fac ); incomeSC_tbl
+```"
+"1","
+low not 
+ 60 134 
+"
+"0","```r
+incomeSCprop <- prop.table(incomeSC_tbl); incomeSCprop
+```"
+"1","
+      low       not 
+0.3092784 0.6907216 
+"
+"0","```r
+range(LCA$income_needs, na.rm=T)
+```"
+"1","[1] 0.05464481 1.96592398
+"

@@ -1,0 +1,82 @@
+"0","```r
+hc_wf$cort_respond_grp <- relevel(hc_wf$cort_respond_grp, ref = \"nochanger\")
+AWC <- multinom(cort_respond_grp ~ AWC_rate, data = hc_wf)
+summary(AWC)
+z_AWC <- summary(AWC)$coefficients/summary(AWC)$standard.errors
+p_AWC <- (1 - pnorm(abs(z_AWC), 0, 1)) * 2
+p_AWC
+exp(coef(AWC))
+exp(confint(AWC))
+pR2(AWC) #McFadden R^2 index; values between .2 and .4 indicate excellent model fit
+
+hc_wf$cort_respond_grp <- relevel(hc_wf$cort_respond_grp, ref = \"nochanger\")
+CTC <- multinom(cort_respond_grp ~ CTC_rate, data = hc_wf)
+summary(CTC)
+z_CTC <- summary(CTC)$coefficients/summary(CTC)$standard.errors
+p_CTC <- (1 - pnorm(abs(z_CTC), 0, 1)) * 2
+p_CTC
+exp(coef(CTC))
+exp(confint(CTC))
+pR2(CTC) #McFadden R^2 index; values between .2 and .4 indicate excellent model fit
+
+
+ggplot(subset(hc_wf, !is.na(nochVdec)), aes(x=CTC_rate, y=nochVdec)) + geom_point(position=position_jitter(height=0.03, width=0)) + 
+  stat_smooth(method=\"glm\", method.args=list(family=\"binomial\"), se=FALSE, size = 4, colour = \"indianred1\") +
+  ylab(\"Pr (Decreaser)\") +
+  xlab(\"Conversational Turns / Hour\") +
+  theme_bw() +
+  theme(
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(), 
+          axis.title.x = element_text(size = 24),
+          axis.title.y = element_text(size = 24),
+          axis.text.x = element_text(size = 18),
+          axis.text.y = element_text(size = 18),
+          plot.title = element_text(size = 24)) +
+  ggtitle(\"OR = .91 (.83, .99)*\")
+
+cor.test(hc_wf$CTC_rate, hc_wf$cort_trim.2)
+cor.test(hc_wf$CTC_rate, hc_wf$sens_M)
+
+hc_wf$sens_M_cent <- scale(hc_wf$sens_M, scale = F)
+hc_wf$intrus_M_cent <- scale(hc_wf$intrus_M, scale = F)
+CTC_sens <- lm(CTC_rate ~ sens_M_cent + I(sens_M_cent^2), data = hc_wf)
+summary(CTC_sens)
+lm.beta(CTC_sens)
+
+CTC_intrus <- lm(CTC_rate ~ intrus_M_cent + I(intrus_M_cent^2), data = hc_wf)
+summary(CTC_intrus)
+
+hc_wf_sub <- subset(hc_wf, sens_M >=3)
+cor.test(hc_wf_sub$CTC_rate, hc_wf_sub$sens_M)
+
+ggplot(hc_wf, aes(x = sens_M, y = CTC_rate)) +
+  stat_smooth(method = \"lm\", se = TRUE, formula = y ~ poly(x,2), size = 3, color = \"orange\") +
+  geom_point(size = 2) +
+  xlab(\"Maternal Sensitivity\") +
+  ylab(\"Conversational Turns/ Hour\") +
+  theme_bw() +
+  theme(
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(), 
+          axis.title.x = element_text(size = 24),
+          axis.title.y = element_text(size = 24),
+          axis.text.x = element_text(size = 18),
+          axis.text.y = element_text(size = 18),
+          plot.title = element_text(size = 24))
+
+ggplot(hc_wf, aes(x = intrus_M, y = CTC_rate)) +
+  stat_smooth(method = \"lm\", se = TRUE, formula = y ~ poly(x,2), size = 3, color = \"orange\") +
+  geom_point(size = 2) +
+  xlab(\"Maternal Intrusiveness\") +
+  ylab(\"Conversational Turns/ Hour\") +
+  theme_bw() +
+  theme(
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(), 
+          axis.title.x = element_text(size = 24),
+          axis.title.y = element_text(size = 24),
+          axis.text.x = element_text(size = 18),
+          axis.text.y = element_text(size = 18),
+          plot.title = element_text(size = 24))
+```"

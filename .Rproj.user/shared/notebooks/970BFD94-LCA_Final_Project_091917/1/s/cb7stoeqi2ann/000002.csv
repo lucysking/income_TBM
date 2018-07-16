@@ -1,0 +1,20 @@
+"0","```r
+prop.table(table(LCA$ParentEd)) #percent with 4-year college degree
+```"
+"1","
+  Less than  4-year college degree Greater than 4-year college degree 
+                         0.3054187                          0.6945813 
+"
+"0","```r
+#based on method of Noble et al. (2015) natura neuro
+LCA$educ_ord <- ifelse(LCA$Qualtrics_Primary_Parent_education == \"No GED / No High School Diploma\", 1, NA)
+LCA$educ_ord <- ifelse(LCA$Qualtrics_Primary_Parent_education == \"GED / High School Diploma\", 2, LCA$educ_ord)
+LCA$educ_ord <- ifelse(LCA$Qualtrics_Primary_Parent_education == \"Some College\", 3, LCA$educ_ord)
+LCA$educ_ord <- ifelse(LCA$Qualtrics_Primary_Parent_education == \"2-year College Degree\", 4, LCA$educ_ord)
+LCA$educ_ord <- ifelse(LCA$Qualtrics_Primary_Parent_education == \"4-year College Degree\", 5, LCA$educ_ord)
+LCA$educ_ord <- ifelse(LCA$Qualtrics_Primary_Parent_education == \"Masters Degree\", 6, LCA$educ_ord)
+LCA$educ_ord <- ifelse(LCA$Qualtrics_Primary_Parent_education == \"Professional Degree (MD, JD, DDS, etc.)\", 7, LCA$educ_ord)
+LCA$educ_ord <- ifelse(LCA$Qualtrics_Primary_Parent_education == \"Doctorate\", 7, LCA$educ_ord)
+ggplot(LCA, aes(x = LCA$educ_ord)) +
+  geom_histogram(bins = 30, position = \"dodge\", fill= \"purple\", color = \"gray\") 
+```"

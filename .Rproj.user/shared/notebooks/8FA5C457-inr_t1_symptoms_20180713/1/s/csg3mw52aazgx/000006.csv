@@ -1,0 +1,63 @@
+"0","roi_symptoms <-"
+"0","  readxl::read_xlsx(roi_inc_int_file, sheet = ""Vols"") %>% "
+"0","  left_join(read_csv(covariates_file), by = ""ELS_ID"") %>% "
+"0","  left_join(read_csv(inr_file), by = ""ELS_ID"") %>% "
+"0","  left_join("
+"0","    haven::read_sav(t1_cbcl_file, user_na = 999) %>% "
+"0","      mutate("
+"0","        ELS_ID = as.integer(ELS_ID),"
+"0","        cbcl_externalizing = as.integer("
+"0","          T1_CBCL_old_Externalizing_Problems_Total_Score"
+"0","        ),"
+"0","        cbcl_externalizing = if_else("
+"0","          cbcl_externalizing == 999, NA_integer_, cbcl_externalizing"
+"0","        )"
+"0","      ) %>% "
+"0","      select("
+"0","        ELS_ID,"
+"0","        cbcl_externalizing"
+"0","      ), "
+"0","    by = ""ELS_ID"""
+"0","  ) %>% "
+"0","  left_join("
+"0","    haven::read_sav(t1_ysr_file, user_na = 999) %>% "
+"0","      mutate("
+"0","        ELS_ID = as.integer(ELS_ID),"
+"0","        ysr_internalizing = as.integer("
+"0","          T1_YSR_old_Internalizing_Problems_Total_Score"
+"0","        ),"
+"0","        ysr_internalizing = if_else("
+"0","          ysr_internalizing == 999, NA_integer_, ysr_internalizing"
+"0","        )"
+"0","      ) %>% "
+"0","      select("
+"0","        ELS_ID,"
+"0","        ysr_internalizing"
+"0","      )"
+"0","  )"
+"2","Parsed with column specification:
+cols(
+  ELS_ID = col_integer(),
+  Age = col_double(),
+  Male = col_integer(),
+  Tanner = col_double(),
+  ICV = col_double(),
+  White = col_integer()
+)
+"
+"2","Parsed with column specification:
+cols(
+  ELS_ID = col_integer(),
+  income_needs = col_double()
+)
+"
+"2","Joining, by = ""ELS_ID""
+"
+"0","#male only dataset"
+"0","roi_symptoms_male <- "
+"0","  roi_symptoms %>% "
+"0","  filter(Male == 1)"
+"0","#female only dataset"
+"0","roi_symptoms_female <- "
+"0","  roi_symptoms %>% "
+"0","  filter(Male == 0)"

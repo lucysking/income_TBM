@@ -1,0 +1,7 @@
+"0","```r
+  
+ggplot(data = LCA, aes(x = Class, y = eICV, color = Class)) +
+  geom_violin(scale = \"count\") +
+  geom_boxplot(width = .1, fill = \"black\", outlier.colour = NA) +
+  stat_summary(fun.y = median, geom = \"point\", fill = \"white\", shape = 21, size = 2.5) 
+```"

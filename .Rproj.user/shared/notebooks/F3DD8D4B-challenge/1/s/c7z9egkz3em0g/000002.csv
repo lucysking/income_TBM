@@ -1,0 +1,4 @@
+"0","c1 %>%"
+"0","  ggplot(mapping = aes(x = temp, y = kps_vacuum)) +"
+"0","  geom_point() +"
+"0","  geom_smooth()"

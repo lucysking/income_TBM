@@ -1,0 +1,4 @@
+"0","c1 %>%"
+"0","  ggplot(mapping = aes(x = temp, y = kps_vacuum)) +"
+"0","  geom_boxplot(aes(group = temp)) +"
+"0","  geom_hline(yintercept = median(c1$kps_vacuum))"

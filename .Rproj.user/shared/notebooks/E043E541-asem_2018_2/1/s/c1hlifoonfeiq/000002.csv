@@ -1,0 +1,39 @@
+"0","```r
+hc_wf$cort_respond_grp <- relevel(hc_wf$cort_respond_grp, ref = \"nochanger\")
+cort2 <- multinom(cort_respond_grp ~ cort_trim.1, data = hc_wf)
+
+```"
+"1","# weights:  9 (4 variable)
+initial  value 42.845879 
+iter  10 value 38.088809
+final  value 38.088807 
+converged
+"
+"0","```r
+summary(cort2)
+```"
+"1","Call:
+multinom(formula = cort_respond_grp ~ cort_trim.1, data = hc_wf)
+
+Coefficients:
+          (Intercept) cort_trim.1
+increaser   -2.423522   -1.050945
+decreaser    2.059770    1.300211
+
+Std. Errors:
+          (Intercept) cort_trim.1
+increaser    1.878348   0.8382514
+decreaser    1.389096   0.7283841
+
+Residual Deviance: 76.17761 
+AIC: 84.17761 
+"
+"0","```r
+z_cort2<- summary(cort2)$coefficients/summary(cort2)$standard.errors
+p_cort2 <- (1 - pnorm(abs(z_cort2), 0, 1)) * 2
+p_cort2
+```"
+"1","          (Intercept) cort_trim.1
+increaser   0.1969668  0.20993840
+decreaser   0.1381241  0.07425117
+"

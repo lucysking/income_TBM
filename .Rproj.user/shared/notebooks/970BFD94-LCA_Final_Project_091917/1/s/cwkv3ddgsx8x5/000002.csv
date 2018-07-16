@@ -1,0 +1,69 @@
+"0","```r
+LCA_brain_lf <- select(LCA, ELS_ID,
+                   LeftHippocampus,
+                   RightHippocampus,
+                   LeftAmygdala,
+                   RightAmygdala,
+                   eICVcent,
+                   Class,
+                   T1_Child_Sex,
+                   AgeCent, 
+                   TanCent,
+                   NumTypeCent,
+                   income_needsCent,
+                   Minority,
+                   educ_ordCent,
+                   Partnered
+)
+bartlett.test(LeftHippocampus~Class, data=LCA_brain_lf) #homogeneity of variance good
+```"
+"1","
+	Bartlett test of homogeneity of variances
+
+data:  LeftHippocampus by Class
+Bartlett's K-squared = 0.3295, df = 2, p-value = 0.8481
+"
+"0","```r
+bartlett.test(RightHippocampus~Class, data=LCA_brain_lf) #homogeneity of variance good
+```"
+"1","
+	Bartlett test of homogeneity of variances
+
+data:  RightHippocampus by Class
+Bartlett's K-squared = 0.37393, df = 2, p-value = 0.8295
+"
+"0","```r
+bartlett.test(LeftAmygdala~Class, data=LCA_brain_lf) #homogeneity of variance good
+```"
+"1","
+	Bartlett test of homogeneity of variances
+
+data:  LeftAmygdala by Class
+Bartlett's K-squared = 0.43055, df = 2, p-value = 0.8063
+"
+"0","```r
+bartlett.test(RightAmygdala~Class, data=LCA_brain_lf) #homogeneity of variance good
+```"
+"1","
+	Bartlett test of homogeneity of variances
+
+data:  RightAmygdala by Class
+Bartlett's K-squared = 1.6146, df = 2, p-value = 0.4461
+"
+"0","```r
+LCA_brain_lf <- reshape(LCA_brain_lf, idvar=\"ELS_ID\", direction=\"long\", 
+             varying=list(c(2:3), c(4:5)),
+             v.names = c(\"Hippocampus\", \"Amygdala\"))
+LCA_brain_lf = rename(LCA_brain_lf, side = time)
+LCA_brain_lf$side <- as.factor(LCA_brain_lf$side)
+levels(LCA_brain_lf$side) <- c(\"left\", \"right\")
+LCA_brain_lf$ELS_ID <- as.factor(LCA_brain_lf$ELS_ID)
+contrasts(LCA_brain_lf$T1_Child_Sex) = c(-1,1)
+contrasts(LCA_brain_lf$side) = c(-1,1)
+contrasts(LCA_brain_lf$Minority) = c(-1,1)
+LCA_brain_lf$Class = as.factor(LCA_brain_lf$Class)
+#rescale volumes so lmer is happy                 
+LCA_brain_lf$Hipp_re <- LCA_brain_lf$Hippocampus/100
+LCA_brain_lf$Amyg_re <- LCA_brain_lf$Amygdala/100
+LCA_brain_lf$eICV_re <- LCA_brain_lf$eICV/1000
+```"

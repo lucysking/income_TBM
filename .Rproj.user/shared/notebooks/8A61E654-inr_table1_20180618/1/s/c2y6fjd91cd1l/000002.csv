@@ -1,0 +1,7 @@
+"0","demo %>% "
+"0","  group_by(Male) %>% "
+"0","  summarise_all("
+"0","    funs(mean, sd)"
+"0","  )"
+"2","argument is not numeric or logical: returning NA"
+"2","argument is not numeric or logical: returning NA"

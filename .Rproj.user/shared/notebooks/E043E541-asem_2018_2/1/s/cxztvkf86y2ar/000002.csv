@@ -1,0 +1,23 @@
+"0","```r
+cort_grp_sum <- hc_wf %>%
+  group_by(cort_respond_grp) %>%
+  summarise(
+    n = n(),
+    M_timearr = mean(time_arrived_hr.2, na.rm =T),
+    M_sensM = mean(sens_M, na.rm = T),
+    M_posregM = mean(posreg_M, na.rm =T),
+    M_intrusM = mean(intrus_M, na.rm = T),
+    M_detachmax = mean(detach_max, na.rm =T),
+    M_NEG =  mean(NEG, na.rm = T),
+    M_cort1 = mean(exp(cort_trim.1), na.rm = T),
+    M_cort2 = mean(exp(cort_trim.2), na.rm =T),
+    M_cort3 = mean(exp(cort_trim.3), na.rm =T),
+    M_cort4 = mean(exp(cort_trim.4), na.rm =T),
+    M_cort5 = mean(exp(cort_trim.5), na.rm =T),
+    M_cortreco = M_cort5 - M_cort4
+  )
+
+```"
+"1","Error in summarise_impl(.data, dots) : 
+  Evaluation error: object 'cort_trim.1' not found.
+"

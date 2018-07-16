@@ -1,0 +1,10 @@
+"0","```r
+hc_wf$cort_respond_grp <- relevel(hc_wf$cort_respond_grp, ref = \"increaser\")
+mnbs1 <- multinom(cort_respond_grp ~ mnbs_tot, data = hc_wf)
+summary(mnbs1)
+z_mnbs1 <- summary(mnbs1)$coefficients/summary(mnbs1)$standard.errors
+p_mnbs1 <- (1 - pnorm(abs(z_mnbs1), 0, 1)) * 2
+p_mnbs1
+exp(coef(mnbs1))
+exp(confint(mnbs1))
+```"

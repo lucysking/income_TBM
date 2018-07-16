@@ -1,0 +1,6 @@
+"0","```r
+Hipp_Class1_ls <- lsmeansLT(Hipp_Class1) #calculate adjusted means, SEs, and CIs; adjusts for unbalanced groups so means are slightly different from those calculated from model
+
+```"
+"1","Some predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescalingSome predictor variables are on very different scales: consider rescaling
+"

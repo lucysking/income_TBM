@@ -1,0 +1,5 @@
+"0","diamonds %>% "
+"0","  ggplot(mapping = aes(x = cut, fill = clarity)) +"
+"0","  geom_bar(position = ""stack"") +"
+"0","  scale_fill_hue() +"
+"0","  guides(fill = guide_legend(reverse = TRUE))"

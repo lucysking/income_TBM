@@ -1,0 +1,748 @@
+"0","```r
+LCA$AgeCent=as.vector(scale(LCA$T1_Child_Age_at_T1S1, scale=F))
+LCA$TanCent=as.vector(scale(LCA$TannerAv, scale=F))
+LCA$NumType=LCA$NumTypesMerged
+LCA$NumTypeCent=as.vector(scale(LCA$NumTypesMerged, scale=F))
+contrasts(LCA$T1_Child_Sex) = c(1,-1)
+LCA$income_needsCent=as.vector(scale(LCA$income_needs, scale=F))
+LCA$eICVcent = as.vector(scale(LCA$eICV, scale=F))
+LCA$educ_ordCent = as.vector(scale(LCA$educ_ord, scale=F))
+#Covariates with class____________________________________________________
+#age
+ClassAge=lm(T1_Child_Age_at_T1S1~Class, data=LCA)
+Anova(ClassAge, type=\"III\")
+```"
+"1","Anova Table (Type III tests)
+
+Response: T1_Child_Age_at_T1S1
+             Sum Sq  Df   F value Pr(>F)    
+(Intercept) 3143.17   1 2892.5763 <2e-16 ***
+Class          0.65   2    0.3013 0.7402    
+Residuals    226.02 208                     
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+"
+"0","```r
+#tanner
+ClassTan=lm(TannerAv~Class, data=LCA)
+Anova(ClassTan, type=\"III\")
+```"
+"1","Anova Table (Type III tests)
+
+Response: TannerAv
+             Sum Sq  Df  F value Pr(>F)    
+(Intercept) 121.000   1 221.8054 <2e-16 ***
+Class         0.909   2   0.8327 0.4363    
+Residuals   113.469 208                    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+"
+"0","```r
+#ses
+contrasts(LCA$Class)=cbind(IvV=c(0,1,0), SvV=c(0,0,1))
+contrasts(LCA$Class)
+```"
+"1","  IvV SvV
+1   0   0
+2   1   0
+3   0   1
+"
+"0","```r
+ClassIncome1=lm(income_needs~Class, data=LCA)
+Anova(ClassIncome1, type=\"III\")
+```"
+"1","Anova Table (Type III tests)
+
+Response: income_needs
+            Sum Sq  Df F value    Pr(>F)    
+(Intercept) 14.344   1  55.037 3.774e-12 ***
+Class       10.200   2  19.569 1.857e-08 ***
+Residuals   49.779 191                      
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+"
+"0","```r
+summary(ClassIncome1)
+```"
+"1","
+Call:
+lm(formula = income_needs ~ Class, data = LCA)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.39459 -0.37067  0.02569  0.32068  1.15846 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)   0.8075     0.1088   7.419 3.77e-12 ***
+ClassIvV      0.2846     0.1288   2.210   0.0283 *  
+ClassSvV      0.6418     0.1186   5.410 1.88e-07 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.5105 on 191 degrees of freedom
+  (17 observations deleted due to missingness)
+Multiple R-squared:  0.1701,	Adjusted R-squared:  0.1614 
+F-statistic: 19.57 on 2 and 191 DF,  p-value: 1.857e-08
+"
+"0","```r
+ClassEd1=lm(educ_ord~Class, data=LCA)
+Anova(ClassEd1, type=\"III\")
+```"
+"1","Anova Table (Type III tests)
+
+Response: educ_ord
+            Sum Sq  Df  F value    Pr(>F)    
+(Intercept) 433.50   1 297.6001 < 2.2e-16 ***
+Class        21.56   2   7.3992 0.0007941 ***
+Residuals   291.33 200                       
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+"
+"0","```r
+summary(ClassEd1)
+```"
+"1","
+Call:
+lm(formula = educ_ord ~ Class, data = LCA)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-3.5000 -1.0744 -0.0744  0.9256  2.7500 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)   4.2500     0.2464  17.251  < 2e-16 ***
+ClassIvV      0.2500     0.2929   0.853  0.39443    
+ClassSvV      0.8244     0.2697   3.057  0.00254 ** 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 1.207 on 200 degrees of freedom
+  (8 observations deleted due to missingness)
+Multiple R-squared:  0.06889,	Adjusted R-squared:  0.05958 
+F-statistic: 7.399 on 2 and 200 DF,  p-value: 0.0007941
+"
+"0","```r
+contrasts(LCA$Class)=cbind(VvS=c(1,0,0), IvS=c(0,1,0))
+contrasts(LCA$Class)
+```"
+"1","  VvS IvS
+1   1   0
+2   0   1
+3   0   0
+"
+"0","```r
+ClassIncome2=lm(income_needs~Class, data=LCA)
+summary(ClassIncome2)
+```"
+"1","
+Call:
+lm(formula = income_needs ~ Class, data = LCA)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-1.39459 -0.37067  0.02569  0.32068  1.15846 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  1.44923    0.04720  30.706  < 2e-16 ***
+ClassVvS    -0.64177    0.11863  -5.410 1.88e-07 ***
+ClassIvS    -0.35712    0.08346  -4.279 2.97e-05 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.5105 on 191 degrees of freedom
+  (17 observations deleted due to missingness)
+Multiple R-squared:  0.1701,	Adjusted R-squared:  0.1614 
+F-statistic: 19.57 on 2 and 191 DF,  p-value: 1.857e-08
+"
+"0","```r
+ClassEd2=lm(educ_ord~Class, data=LCA)
+summary(ClassEd2)
+```"
+"1","
+Call:
+lm(formula = educ_ord ~ Class, data = LCA)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-3.5000 -1.0744 -0.0744  0.9256  2.7500 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)   5.0744     0.1097  46.248  < 2e-16 ***
+ClassVvS     -0.8244     0.2697  -3.057  0.00254 ** 
+ClassIvS     -0.5744     0.1928  -2.980  0.00324 ** 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 1.207 on 200 degrees of freedom
+  (8 observations deleted due to missingness)
+Multiple R-squared:  0.06889,	Adjusted R-squared:  0.05958 
+F-statistic: 7.399 on 2 and 200 DF,  p-value: 0.0007941
+"
+"0","```r
+set.seed(123)
+confint(ClassIncome1)
+```"
+"1","                2.5 %    97.5 %
+(Intercept) 0.5927761 1.0221497
+ClassIvV    0.0306245 0.5386662
+ClassSvV    0.4077670 0.8757713
+"
+"0","```r
+confint(ClassIncome2)
+```"
+"1","                 2.5 %     97.5 %
+(Intercept)  1.3561376  1.5423264
+ClassVvS    -0.8757713 -0.4077670
+ClassIvS    -0.5217529 -0.1924947
+"
+"0","```r
+confint(ClassEd2)
+```"
+"1","                 2.5 %     97.5 %
+(Intercept)  4.8580239  5.2907364
+ClassVvS    -1.3561795 -0.2925808
+ClassIvS    -0.9544662 -0.1942941
+"
+"0","```r
+#cumulative risk
+contrasts(LCA$Class)=cbind(IvV=c(0,1,0), SvV=c(0,0,1))
+contrasts(LCA$Class)
+```"
+"1","  IvV SvV
+1   0   0
+2   1   0
+3   0   1
+"
+"0","```r
+ClassType1=lm(NumType~Class, data=LCA)
+Anova(ClassType1, type=\"III\")
+```"
+"1","Anova Table (Type III tests)
+
+Response: NumType
+            Sum Sq  Df F value    Pr(>F)    
+(Intercept) 4489.0   1  794.39 < 2.2e-16 ***
+Class       1485.1   2  131.40 < 2.2e-16 ***
+Residuals   1175.4 208                      
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+"
+"0","```r
+summary(ClassType1)
+```"
+"1","
+Call:
+lm(formula = NumType ~ Class, data = LCA)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-6.8814 -1.8814  0.0787  1.1186  7.0787 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  13.4000     0.4754  28.185  < 2e-16 ***
+ClassIvV     -3.5186     0.5673  -6.203 2.95e-09 ***
+ClassSvV     -7.4787     0.5201 -14.379  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 2.377 on 208 degrees of freedom
+Multiple R-squared:  0.5582,	Adjusted R-squared:  0.554 
+F-statistic: 131.4 on 2 and 208 DF,  p-value: < 2.2e-16
+"
+"0","```r
+contrasts(LCA$Class)=cbind(VvS=c(1,0,0), IvS=c(0,1,0))
+contrasts(LCA$Class)
+```"
+"1","  VvS IvS
+1   1   0
+2   0   1
+3   0   0
+"
+"0","```r
+ClassType2=lm(NumType~Class, data=LCA)
+summary(ClassType2)
+```"
+"1","
+Call:
+lm(formula = NumType ~ Class, data = LCA)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-6.8814 -1.8814  0.0787  1.1186  7.0787 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)   5.9213     0.2109   28.07   <2e-16 ***
+ClassVvS      7.4787     0.5201   14.38   <2e-16 ***
+ClassIvS      3.9601     0.3745   10.57   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 2.377 on 208 degrees of freedom
+Multiple R-squared:  0.5582,	Adjusted R-squared:  0.554 
+F-statistic: 131.4 on 2 and 208 DF,  p-value: < 2.2e-16
+"
+"0","```r
+set.seed(123)
+confint(ClassType1)
+```"
+"1","                2.5 %    97.5 %
+(Intercept) 12.462718 14.337282
+ClassIvV    -4.637010 -2.400278
+ClassSvV    -8.504133 -6.453348
+"
+"0","```r
+confint(ClassType2)
+```"
+"1","               2.5 %   97.5 %
+(Intercept) 5.505408 6.337111
+ClassVvS    6.453348 8.504133
+ClassIvS    3.221735 4.698457
+"
+"0","```r
+#sex
+chisq.test(LCA$Class, LCA$T1_Child_Sex)
+```"
+"1","
+	Pearson's Chi-squared test
+
+data:  LCA$Class and LCA$T1_Child_Sex
+X-squared = 2.1042, df = 2, p-value = 0.3492
+"
+"0","```r
+#minority status
+chisq.test(LCA$Class, LCA$Minority)
+```"
+"1","
+	Pearson's Chi-squared test
+
+data:  LCA$Class and LCA$Minority
+X-squared = 3.3453, df = 2, p-value = 0.1878
+"
+"0","```r
+#psychiatric disorder
+chisq.test(LCA$Class, LCA$KSADS_Disorder)
+```"
+"1","Chi-squared approximation may be incorrect
+"
+"1","
+	Pearson's Chi-squared test
+
+data:  LCA$Class and LCA$KSADS_Disorder
+X-squared = 0.90178, df = 2, p-value = 0.6371
+"
+"0","```r
+addmargins(table(LCA$Class, LCA$KSADS_Disorder))
+```"
+"1","     
+        0   1 Sum
+  1    21   4  25
+  2    53   6  59
+  3   108  19 127
+  Sum 182  29 211
+"
+"0","```r
+#parent marital status
+chisq.test(LCA$Class, LCA$Partnered) # significant
+```"
+"1","
+	Pearson's Chi-squared test
+
+data:  LCA$Class and LCA$Partnered
+X-squared = 66.236, df = 2, p-value = 4.14e-15
+"
+"0","```r
+prop.table(table(LCA$Class, LCA$Partnered))
+```"
+"1","   
+    Single‎/Divorced‎/Widowed Married‎/Partnered
+  1              0.07389163        0.04433498
+  2              0.16256158        0.12315271
+  3              0.03940887        0.55665025
+"
+"0","```r
+#parent binary education
+chisq.test(LCA$Class, LCA$ParentEd) # significant
+```"
+"1","
+	Pearson's Chi-squared test
+
+data:  LCA$Class and LCA$ParentEd
+X-squared = 13.261, df = 2, p-value = 0.001319
+"
+"0","```r
+addmargins(table(LCA$Class, LCA$ParentEd))
+```"
+"1","     
+      Less than  4-year college degree Greater than 4-year college degree Sum
+  1                                 13                                 11  24
+  2                                 23                                 35  58
+  3                                 26                                 95 121
+  Sum                               62                                141 203
+"
+"0","```r
+#Covariates with volumes
+cor.test(LCA$LeftHippocampus, LCA$T1_Child_Age_at_T1S1) #positively associated
+```"
+"1","
+	Pearson's product-moment correlation
+
+data:  LCA$LeftHippocampus and LCA$T1_Child_Age_at_T1S1
+t = 2.7578, df = 168, p-value = 0.006463
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ 0.05946122 0.34773473
+sample estimates:
+      cor 
+0.2081129 
+"
+"0","```r
+cor.test(LCA$RightHippocampus, LCA$T1_Child_Age_at_T1S1) #positively associated
+```"
+"1","
+	Pearson's product-moment correlation
+
+data:  LCA$RightHippocampus and LCA$T1_Child_Age_at_T1S1
+t = 3.13, df = 178, p-value = 0.002043
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ 0.08497939 0.36255520
+sample estimates:
+      cor 
+0.2284038 
+"
+"0","```r
+cor.test(LCA$LeftAmygdala, LCA$T1_Child_Age_at_T1S1) #positively associated
+```"
+"1","
+	Pearson's product-moment correlation
+
+data:  LCA$LeftAmygdala and LCA$T1_Child_Age_at_T1S1
+t = 3.2391, df = 179, p-value = 0.001429
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ 0.09262803 0.36851646
+sample estimates:
+      cor 
+0.2353067 
+"
+"0","```r
+cor.test(LCA$RightAmygdala, LCA$T1_Child_Age_at_T1S1) #positively associated
+```"
+"1","
+	Pearson's product-moment correlation
+
+data:  LCA$RightAmygdala and LCA$T1_Child_Age_at_T1S1
+t = 3.4064, df = 175, p-value = 0.0008166
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ 0.1057536 0.3827856
+sample estimates:
+      cor 
+0.2493644 
+"
+"0","```r
+cor.test(LCA$LeftHippocampus, LCA$TannerAv) #unassociated
+```"
+"1","
+	Pearson's product-moment correlation
+
+data:  LCA$LeftHippocampus and LCA$TannerAv
+t = -1.0009, df = 168, p-value = 0.3183
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ -0.22490189  0.07438229
+sample estimates:
+        cor 
+-0.07699396 
+"
+"0","```r
+cor.test(LCA$RightHippocampus, LCA$TannerAv) #unassociated
+```"
+"1","
+	Pearson's product-moment correlation
+
+data:  LCA$RightHippocampus and LCA$TannerAv
+t = 0.04585, df = 178, p-value = 0.9635
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ -0.1428985  0.1496247
+sample estimates:
+        cor 
+0.003436601 
+"
+"0","```r
+cor.test(LCA$LeftAmygdala, LCA$TannerAv) #unassociated
+```"
+"1","
+	Pearson's product-moment correlation
+
+data:  LCA$LeftAmygdala and LCA$TannerAv
+t = -0.94762, df = 179, p-value = 0.3446
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ -0.21430067  0.07598953
+sample estimates:
+       cor 
+-0.0706513 
+"
+"0","```r
+cor.test(LCA$RightAmygdala, LCA$TannerAv) #unassociated
+```"
+"1","
+	Pearson's product-moment correlation
+
+data:  LCA$RightAmygdala and LCA$TannerAv
+t = 0.15616, df = 175, p-value = 0.8761
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ -0.1359334  0.1590276
+sample estimates:
+       cor 
+0.01180392 
+"
+"0","```r
+cor.test(LCA$LeftHippocampus, LCA$income_needs) #unassociated
+```"
+"1","
+	Pearson's product-moment correlation
+
+data:  LCA$LeftHippocampus and LCA$income_needs
+t = 0.97291, df = 154, p-value = 0.3321
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ -0.07996345  0.23244527
+sample estimates:
+       cor 
+0.07815942 
+"
+"0","```r
+cor.test(LCA$RightHippocampus, LCA$income_needs) #unassociated
+```"
+"1","
+	Pearson's product-moment correlation
+
+data:  LCA$RightHippocampus and LCA$income_needs
+t = 0.75377, df = 163, p-value = 0.4521
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ -0.09469926  0.20983118
+sample estimates:
+       cor 
+0.05893705 
+"
+"0","```r
+cor.test(LCA$LeftAmygdala, LCA$income_needs) #unassociated
+```"
+"1","
+	Pearson's product-moment correlation
+
+data:  LCA$LeftAmygdala and LCA$income_needs
+t = 1.0429, df = 165, p-value = 0.2985
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ -0.07181998  0.22996367
+sample estimates:
+       cor 
+0.08092627 
+"
+"0","```r
+cor.test(LCA$RightAmygdala, LCA$income_needs) #unassociated
+```"
+"1","
+	Pearson's product-moment correlation
+
+data:  LCA$RightAmygdala and LCA$income_needs
+t = 1.4129, df = 160, p-value = 0.1596
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ -0.04393689  0.26074288
+sample estimates:
+      cor 
+0.1110106 
+"
+"0","```r
+cor.test(LCA$LeftHippocampus, LCA$educ_ord) #unassociated
+```"
+"1","
+	Pearson's product-moment correlation
+
+data:  LCA$LeftHippocampus and LCA$educ_ord
+t = 1.6377, df = 162, p-value = 0.1034
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ -0.02614647  0.27547716
+sample estimates:
+      cor 
+0.1276148 
+"
+"0","```r
+cor.test(LCA$RightHippocampus, LCA$educ_ord) #unassociated
+```"
+"1","
+	Pearson's product-moment correlation
+
+data:  LCA$RightHippocampus and LCA$educ_ord
+t = 1.6118, df = 171, p-value = 0.1088
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ -0.02736805  0.26666482
+sample estimates:
+      cor 
+0.1223317 
+"
+"0","```r
+cor.test(LCA$LeftAmygdala, LCA$educ_ord) #unassociated
+```"
+"1","
+	Pearson's product-moment correlation
+
+data:  LCA$LeftAmygdala and LCA$educ_ord
+t = 0.45638, df = 173, p-value = 0.6487
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ -0.1142542  0.1820832
+sample estimates:
+      cor 
+0.0346767 
+"
+"0","```r
+cor.test(LCA$RightAmygdala, LCA$educ_ord) #unassociated
+```"
+"1","
+	Pearson's product-moment correlation
+
+data:  LCA$RightAmygdala and LCA$educ_ord
+t = 2.2374, df = 168, p-value = 0.02658
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ 0.02010384 0.31261378
+sample estimates:
+      cor 
+0.1701034 
+"
+"0","```r
+t.test(LCA$LeftHippocampus~LCA$T1_Child_Sex) #larger in males
+```"
+"1","
+	Welch Two Sample t-test
+
+data:  LCA$LeftHippocampus by LCA$T1_Child_Sex
+t = 3.3987, df = 148.7, p-value = 0.0008691
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+  92.39823 349.07034
+sample estimates:
+  mean in group Male mean in group Female 
+            4383.634             4162.900 
+"
+"0","```r
+t.test(LCA$RightHippocampus~LCA$T1_Child_Sex) #larger in males
+```"
+"1","
+	Welch Two Sample t-test
+
+data:  LCA$RightHippocampus by LCA$T1_Child_Sex
+t = 2.5588, df = 157.34, p-value = 0.01145
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+  36.45284 283.16735
+sample estimates:
+  mean in group Male mean in group Female 
+            4314.096             4154.286 
+"
+"0","```r
+t.test(LCA$LeftAmygdala~LCA$T1_Child_Sex) #larger in males
+```"
+"1","
+	Welch Two Sample t-test
+
+data:  LCA$LeftAmygdala by LCA$T1_Child_Sex
+t = 4.5669, df = 142.99, p-value = 1.059e-05
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+  82.15067 207.53430
+sample estimates:
+  mean in group Male mean in group Female 
+            1548.114             1403.271 
+"
+"0","```r
+t.test(LCA$RightAmygdala~LCA$T1_Child_Sex) #larger in males
+```"
+"1","
+	Welch Two Sample t-test
+
+data:  LCA$RightAmygdala by LCA$T1_Child_Sex
+t = 2.3273, df = 146.09, p-value = 0.02132
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+  11.8159 144.8752
+sample estimates:
+  mean in group Male mean in group Female 
+            1592.941             1514.595 
+"
+"0","```r
+t.test(LCA$LeftHippocampus~LCA$Minority) #smaller in minorities
+```"
+"1","
+	Welch Two Sample t-test
+
+data:  LCA$LeftHippocampus by LCA$Minority
+t = 3.1327, df = 146.34, p-value = 0.002092
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+  75.4977 333.5487
+sample estimates:
+   mean in group White mean in group Minority 
+              4384.747               4180.224 
+"
+"0","```r
+t.test(LCA$RightHippocampus~LCA$Minority) #smaller in minorities
+```"
+"1","
+	Welch Two Sample t-test
+
+data:  LCA$RightHippocampus by LCA$Minority
+t = 2.4182, df = 149.96, p-value = 0.0168
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+  27.84772 276.67442
+sample estimates:
+   mean in group White mean in group Minority 
+              4319.877               4167.616 
+"
+"0","```r
+t.test(LCA$LeftAmygdala~LCA$Minority) #smaller in minorities
+```"
+"1","
+	Welch Two Sample t-test
+
+data:  LCA$LeftAmygdala by LCA$Minority
+t = 3.3374, df = 129.18, p-value = 0.001105
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+  45.3263 177.3138
+sample estimates:
+   mean in group White mean in group Minority 
+              1533.554               1422.234 
+"
+"0","```r
+t.test(LCA$RightAmygdala~LCA$Minority) #smaller in minorities
+```"
+"1","
+	Welch Two Sample t-test
+
+data:  LCA$RightAmygdala by LCA$Minority
+t = 3.4008, df = 135.27, p-value = 0.0008836
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+  48.41305 182.96724
+sample estimates:
+   mean in group White mean in group Minority 
+              1617.777               1502.087 
+"

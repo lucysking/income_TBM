@@ -1,0 +1,5 @@
+"0","```r
+write.csv(sfp, \"~/Desktop/BABIES/data/PCIRS_sfp_raw.csv\")
+write.csv(sfp_av, \"~/Desktop/BABIES/data/PCIRS_sfp_lf.csv\")
+write.csv(sfp_wf, \"~/Desktop/BABIES/data/PCIRS_sfp_wf.csv\")
+```"

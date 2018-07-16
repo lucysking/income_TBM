@@ -1,0 +1,129 @@
+"0","```r
+sfp$Time_add <- sfp$Time_add/60
+sens_slope <- lmer(sens_fin ~ Time_add + (Time_add|ID), data = sfp)
+summary(sens_slope)
+```"
+"1","Linear mixed model fit by REML t-tests use Satterthwaite approximations to degrees of
+  freedom [lmerMod]
+Formula: sens_fin ~ Time_add + (Time_add | ID)
+   Data: sfp
+
+REML criterion at convergence: 1606.1
+
+Scaled residuals: 
+     Min       1Q   Median       3Q      Max 
+-2.68408 -0.62426 -0.00215  0.61037  2.96427 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr 
+ ID       (Intercept) 1.37161  1.1712        
+          Time_add    0.03865  0.1966   -0.49
+ Residual             0.45410  0.6739        
+Number of obs: 654, groups:  ID, 56
+
+Fixed effects:
+            Estimate Std. Error       df t value Pr(>|t|)    
+(Intercept)  4.32981    0.16634 55.23000  26.031   <2e-16 ***
+Time_add    -0.04929    0.03067 55.34000  -1.607    0.114    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+         (Intr)
+Time_add -0.548
+"
+"0","```r
+slopes_sens <- coef(sens_slope)
+slopes_sens <- do.call(rbind.data.frame, slopes_sens)
+slopes_sens$ID <- row.names(slopes_sens)
+slopes_sens <- cSplit(slopes_sens, 'ID', sep=\".\", stripWhite=TRUE, type.convert=FALSE)
+colnames(slopes_sens)[2] <- \"sens_slope\"
+colnames(slopes_sens)[4] <- \"ID\"
+intrus_slope <- lmer(intrus_fin ~ Time_add + (Time_add|ID), data = sfp)
+summary(intrus_slope)
+```"
+"1","Linear mixed model fit by REML t-tests use Satterthwaite approximations to degrees of
+  freedom [lmerMod]
+Formula: intrus_fin ~ Time_add + (Time_add | ID)
+   Data: sfp
+
+REML criterion at convergence: 1943.8
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-2.8879 -0.5951 -0.0418  0.5360  3.7793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr 
+ ID       (Intercept) 1.98821  1.4100        
+          Time_add    0.03152  0.1775   -0.40
+ Residual             0.80152  0.8953        
+Number of obs: 654, groups:  ID, 56
+
+Fixed effects:
+            Estimate Std. Error       df t value Pr(>|t|)    
+(Intercept)  3.03120    0.20269 55.11000  14.955   <2e-16 ***
+Time_add    -0.03062    0.03160 55.70000  -0.969    0.337    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+         (Intr)
+Time_add -0.493
+"
+"0","```r
+slopes_intrus <- coef(intrus_slope)
+slopes_intrus <- do.call(rbind.data.frame, slopes_intrus)
+slopes_intrus$ID <- row.names(slopes_intrus)
+slopes_intrus <- cSplit(slopes_intrus, 'ID', sep=\".\", stripWhite=TRUE, type.convert=FALSE)
+colnames(slopes_intrus)[2] <- \"intrus_slope\"
+colnames(slopes_intrus)[4] <- \"ID\"
+posreg_slope <- lmer(posreg_fin ~ Time_add + (Time_add|ID), data = sfp)
+summary(posreg_slope)
+```"
+"1","Linear mixed model fit by REML t-tests use Satterthwaite approximations to degrees of
+  freedom [lmerMod]
+Formula: posreg_fin ~ Time_add + (Time_add | ID)
+   Data: sfp
+
+REML criterion at convergence: 1226.8
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-4.8542 -0.4719  0.0323  0.5747  2.7195 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr 
+ ID       (Intercept) 0.5465   0.7392        
+          Time_add    0.0204   0.1428   -0.43
+ Residual             0.2610   0.5109        
+Number of obs: 654, groups:  ID, 56
+
+Fixed effects:
+            Estimate Std. Error       df t value Pr(>|t|)    
+(Intercept)  5.45550    0.10762 54.99000  50.690   <2e-16 ***
+Time_add    -0.02977    0.02254 54.05000  -1.321    0.192    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Correlation of Fixed Effects:
+         (Intr)
+Time_add -0.518
+"
+"0","```r
+slopes_posreg <- coef(posreg_slope)
+slopes_posreg <- do.call(rbind.data.frame, slopes_posreg)
+slopes_posreg$ID <- row.names(slopes_posreg)
+slopes_posreg <- cSplit(slopes_posreg, 'ID', sep=\".\", stripWhite=TRUE, type.convert=FALSE)
+colnames(slopes_posreg)[2] <- \"posreg_slope\"
+colnames(slopes_posreg)[4] <- \"ID\"
+care_slopes <- merge(slopes_sens, slopes_intrus, by = \"ID\")
+care_slopes <- merge(care_slopes, slopes_posreg, by = \"ID\")
+care_slopes <- care_slopes %>%
+  select(
+    ID,
+    sens_slope,
+    intrus_slope,
+    posreg_slope
+  )
+```"

@@ -1,0 +1,163 @@
+"0","```r
+library(boot)
+```"
+"1","
+Attaching package: ‘boot’
+
+The following object is masked from ‘package:car’:
+
+    logit
+"
+"0","```r
+samplemean <- function(x, d) {
+  return(mean(x[d], na.rm =T))
+}
+#bilaterial hippocampus
+LCA_classV <- subset(LCA, Class == 1)
+set.seed(123)
+b_V = boot(data = LCA_classV$BIhipp,  statistic = samplemean, R = 1000)
+boot.ci(b_V, type = \"bca\")
+```"
+"1","BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
+Based on 1000 bootstrap replicates
+
+CALL : 
+boot.ci(boot.out = b_V, type = \"bca\")
+
+Intervals : 
+Level       BCa          
+95%   (3925, 4236 )  
+Calculations and Intervals on Original Scale
+"
+"0","```r
+LCA_classI <- subset(LCA, Class == 2)
+set.seed(123)
+b_I = boot(data = LCA_classI$BIhipp,  statistic = samplemean, R = 1000)
+boot.ci(b_I, type = \"bca\")
+```"
+"1","BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
+Based on 1000 bootstrap replicates
+
+CALL : 
+boot.ci(boot.out = b_I, type = \"bca\")
+
+Intervals : 
+Level       BCa          
+95%   (4075, 4312 )  
+Calculations and Intervals on Original Scale
+"
+"0","```r
+LCA_classS <- subset(LCA, Class == 3)
+set.seed(123)
+b_S = boot(data = LCA_classS$BIhipp,  statistic = samplemean, R = 1000)
+boot.ci(b_S, type = \"bca\")
+```"
+"1","BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
+Based on 1000 bootstrap replicates
+
+CALL : 
+boot.ci(boot.out = b_S, type = \"bca\")
+
+Intervals : 
+Level       BCa          
+95%   (4215, 4371 )  
+Calculations and Intervals on Original Scale
+"
+"0","```r
+#Left hippocampus
+set.seed(123)
+b_Lhipp_V = boot(data = LCA_classV$LeftHippocampus,  statistic = samplemean, R = 1000)
+boot.ci(b_Lhipp_V, type = \"bca\")
+```"
+"1","BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
+Based on 1000 bootstrap replicates
+
+CALL : 
+boot.ci(boot.out = b_Lhipp_V, type = \"bca\")
+
+Intervals : 
+Level       BCa          
+95%   (3923, 4248 )  
+Calculations and Intervals on Original Scale
+"
+"0","```r
+set.seed(123)
+b_Lhipp_I = boot(data = LCA_classI$LeftHippocampus,  statistic = samplemean, R = 1000)
+boot.ci(b_Lhipp_I, type = \"bca\")
+```"
+"1","BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
+Based on 1000 bootstrap replicates
+
+CALL : 
+boot.ci(boot.out = b_Lhipp_I, type = \"bca\")
+
+Intervals : 
+Level       BCa          
+95%   (4089, 4320 )  
+Calculations and Intervals on Original Scale
+"
+"0","```r
+set.seed(123)
+b_Lhipp_S = boot(data = LCA_classS$LeftHippocampus,  statistic = samplemean, R = 1000)
+boot.ci(b_Lhipp_S, type = \"bca\")
+```"
+"1","BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
+Based on 1000 bootstrap replicates
+
+CALL : 
+boot.ci(boot.out = b_Lhipp_S, type = \"bca\")
+
+Intervals : 
+Level       BCa          
+95%   (4233, 4406 )  
+Calculations and Intervals on Original Scale
+"
+"0","```r
+#Right hippocampus
+set.seed(123)
+b_Rhipp_V = boot(data = LCA_classV$RightHippocampus,  statistic = samplemean, R = 1000)
+boot.ci(b_Rhipp_V, type = \"bca\")
+```"
+"1","BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
+Based on 1000 bootstrap replicates
+
+CALL : 
+boot.ci(boot.out = b_Rhipp_V, type = \"bca\")
+
+Intervals : 
+Level       BCa          
+95%   (3935, 4246 )  
+Calculations and Intervals on Original Scale
+"
+"0","```r
+set.seed(123)
+b_Rhipp_I = boot(data = LCA_classI$RightHippocampus,  statistic = samplemean, R = 1000)
+boot.ci(b_Rhipp_I, type = \"bca\")
+```"
+"1","BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
+Based on 1000 bootstrap replicates
+
+CALL : 
+boot.ci(boot.out = b_Rhipp_I, type = \"bca\")
+
+Intervals : 
+Level       BCa          
+95%   (4030, 4289 )  
+Calculations and Intervals on Original Scale
+"
+"0","```r
+set.seed(123)
+b_Rhipp_S = boot(data = LCA_classS$RightHippocampus,  statistic = samplemean, R = 1000)
+boot.ci(b_Rhipp_S, type = \"bca\")
+```"
+"1","BOOTSTRAP CONFIDENCE INTERVAL CALCULATIONS
+Based on 1000 bootstrap replicates
+
+CALL : 
+boot.ci(boot.out = b_Rhipp_S, type = \"bca\")
+
+Intervals : 
+Level       BCa          
+95%   (4192, 4354 )  
+Calculations and Intervals on Original Scale
+"

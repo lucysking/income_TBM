@@ -1,0 +1,10 @@
+"0","```r
+png(filename=\"/Users/lucyking/Desktop/BABIES/plots/posreg_ID.png\", width = 600, height = 500)
+posreg_ID <- ggplot(sfp_av, aes(Episode, posreg_M, group = ID)) + 
+  geom_line(aes(colour = ID)) + 
+  geom_point(aes(colour = ID)) +
+  ylab (\"Positive Regard\") +
+  theme_bw() +
+  theme(legend.position=\"none\", panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.text.y  = element_text(size=24), axis.title.y = element_text(size=30), axis.text.x  = element_text(size=24), axis.title.x = element_text(size=30))
+posreg_ID
+```"

@@ -1,0 +1,31 @@
+"0","```r
+sfp_wf <- reshape(sfp_av, idvar = \"ID\", timevar = \"Episode\", direction = \"wide\")
+sfp_wf <- merge(sfp_wf, care_slopes, by = \"ID\")
+sfp_wf <- merge(sfp_wf, sfp_av_max[ , c(\"ID\", \"sens_max\", \"sens_min\", \"intrus_max\", \"intrus_min\", \"detach_max\", \"detach_min\", \"posreg_max\")], by = \"ID\")
+#calcuate average across episodes____________________
+#sensivity
+sfp_wf$sens_M <- rowMeans(subset(sfp_wf, select = c(sens_M.P, sens_M.R1, sens_M.R2), na.rm = T))
+sfp_wf$sens_M <- ifelse(is.na(sfp_wf$sens_M), (sfp_wf$sens_M.P+ sfp_wf$sens_M.R1)/2, sfp_wf$sens_M) #if no R2, calculate mean from P and R1
+#intrusiveness
+sfp_wf$intrus_M <- rowMeans(subset(sfp_wf, select = c(intrus_M.P, intrus_M.R1, intrus_M.R2), na.rm = T))
+sfp_wf$intrus_M <- ifelse(is.na(sfp_wf$intrus_M), (sfp_wf$intrus_M.P+ sfp_wf$intrus_M.R1)/2, sfp_wf$intrus_M)
+#positive regard
+sfp_wf$posreg_M <- rowMeans(subset(sfp_wf, select = c(posreg_M.P, posreg_M.R1, posreg_M.R2), na.rm = T))
+sfp_wf$posreg_M <- ifelse(is.na(sfp_wf$posreg_M), (sfp_wf$posreg_M.P+ sfp_wf$posreg_M.R1)/2, sfp_wf$posreg_M)
+#detachment regard
+sfp_wf$detach_M <- rowMeans(subset(sfp_wf, select = c(detach_M.P, detach_M.R1, detach_M.R2), na.rm = T))
+sfp_wf$detach_M <- ifelse(is.na(sfp_wf$detach_M), (sfp_wf$detach_M.P+ sfp_wf$detach_M.R1)/2, sfp_wf$detach_M)
+#calcuate average across reunions only___________________
+#sensivity
+sfp_wf$sensR_M <- rowMeans(subset(sfp_wf, select = c(sens_M.R1, sens_M.R2), na.rm = T))
+sfp_wf$sensR_M <- ifelse(is.na(sfp_wf$sensR_M), (sfp_wf$sens_M.R1), sfp_wf$sensR_M) #if no R2, use only R1
+#intrusiveness
+sfp_wf$intrusR_M <- rowMeans(subset(sfp_wf, select = c(intrus_M.R1, intrus_M.R2), na.rm = T))
+sfp_wf$intrusR_M <- ifelse(is.na(sfp_wf$intrusR_M), (sfp_wf$intrus_M.R1), sfp_wf$intrusR_M)
+#positive regard
+sfp_wf$posregR_M <- rowMeans(subset(sfp_wf, select = c(posreg_M.R1, posreg_M.R2), na.rm = T))
+sfp_wf$posregR_M <- ifelse(is.na(sfp_wf$posregR_M), (sfp_wf$posreg_M.R1), sfp_wf$posregR_M)
+#detachment regard
+sfp_wf$detachR_M <- rowMeans(subset(sfp_wf, select = c(detach_M.R1, detach_M.R2), na.rm = T))
+sfp_wf$detachR_M <- ifelse(is.na(sfp_wf$detachR_M), (sfp_wf$detach_M.R1), sfp_wf$detachR_M)
+```"
