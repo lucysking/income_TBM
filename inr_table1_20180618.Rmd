@@ -16,9 +16,8 @@ demographic_file <- "~/Desktop/ELS/income_TBM/data/demographics_table1_201803.sa
 ```{r}
 demo <-
   haven::read_sav(demographic_file) %>% 
-  filter(I2N != "NA") %>% 
-  mutate(I2N = as.numeric(I2N)) %>% 
-  rename(ELS_ID = Sub)
+  filter(income_needs != "NA") %>% 
+  mutate(income_needs = as.numeric(income_needs))
 ```
 
 ```{r}
@@ -52,7 +51,7 @@ demo_female <-
 range(demo_female$Age)
 range(demo_female$Tanner)
 range(demo_female$TBV)
-range(demo_female$I2N)
+range(demo_female$income_needs)
 ```
 
 ```{r}
@@ -63,7 +62,7 @@ sex_t_test <- function(x) {
 sex_t_test(demo$Age)
 sex_t_test(demo$Tanner)
 sex_t_test(demo$TBV)
-sex_t_test(demo$I2N)
+sex_t_test(demo$income_needs)
 ```
 
 ```{r}
@@ -126,7 +125,7 @@ chisq.test(demo$income_factor, demo$Male)
 
 ```{r}
 demo %>% 
-  count(I2N < 1) %>% 
+  count(income_needs < 1) %>% 
   mutate(
     percent = n / sum(n)
   )
