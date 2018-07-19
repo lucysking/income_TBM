@@ -40,7 +40,7 @@ demo_male <-
 
 range(demo_male$Age)
 range(demo_male$Tanner)
-range(demo_male$TBV)
+range(demo_male$ICV)
 ```
 
 ```{r}
@@ -50,7 +50,7 @@ demo_female <-
 
 range(demo_female$Age)
 range(demo_female$Tanner)
-range(demo_female$TBV)
+range(demo_female$ICV)
 range(demo_female$income_needs)
 ```
 
@@ -61,7 +61,7 @@ sex_t_test <- function(x) {
 
 sex_t_test(demo$Age)
 sex_t_test(demo$Tanner)
-sex_t_test(demo$TBV)
+sex_t_test(demo$ICV)
 sex_t_test(demo$income_needs)
 ```
 

@@ -12,7 +12,7 @@ library(tidyverse)
 
 ##Parameters
 #files
-demo_full_file <- "~/Desktop/ELS/income_TBM/data/120616_ELS_T1S1_Demographics Golden Standard.sav"
+demo_full_file <- "~/Desktop/ELS/income_TBM/data/120616_ELS_T1S1_Income.sav"
 #in SPSS file, first cleaned variable "pplinhome_1_TEXT" and converted to numeric 
 covariates_file <- "~/Desktop/ELS/income_TBM/data/tbm_cov_income.csv"
 ```
