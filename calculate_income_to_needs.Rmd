@@ -1,8 +1,10 @@
 ---
 title: "Calculate Income-to-Needs at T1"
 author: "Lucy King"
-date: "2018-06-14"
-output: html_document
+output: 
+  github_document:
+    toc: true
+    toc_depth: 6
 ---
 
 
@@ -12,24 +14,23 @@ library(tidyverse)
 
 ##Parameters
 #files
-demo_full_file <- "~/Desktop/ELS/income_TBM/data/120616_ELS_T1S1_Income.sav"
+income_t1_file <- "~/Desktop/ELS/income_TBM/data/osf/income_t1.csv"
 #in SPSS file, first cleaned variable "pplinhome_1_TEXT" and converted to numeric 
-covariates_file <- "~/Desktop/ELS/income_TBM/data/tbm_cov_income.csv"
+tbm_covariates_file <- "~/Desktop/ELS/income_TBM/data/osf/tbm_cov_income.csv"
 ```
 
+##calculate income-to-needs
 ```{r}
 #income reported in bins, used median for income to needs as in Yu et al. (2017) developmental science
 inr <-
-  haven::read_spss(demo_full_file, user_na = 999) %>% 
+  read_csv(income_t1_file) %>% 
   select(
     ELS_ID,
     household_income = Household_Income,
     ppl_in_home = pplinhome_1_TEXT
   ) %>% 
   filter(
-    !is.na(household_income), 
-    household_income != 999,
-    household_income != "11"#some are coded in SPSS as 11, which indicates "don't know"
+    !is.na(household_income)
     ) %>% 
   mutate(
     household_income = as.character(household_income),
@@ -48,7 +49,7 @@ inr <-
         "10" = "150000"
       )
     ),
-#santa clara country income : 80% of median income (ratios <= 1 are therefore "low income")
+#santa clara country low-income limit : 80% of median income (ratios <= 1 are therefore "low income")
 #https://www.huduser.gov/portal/datasets/il/il2017/2017summary.odn
     SC_lowincome_limit = as.numeric(
       recode(
@@ -66,11 +67,6 @@ inr <-
     ),
     income_needs = household_income_numeric / SC_lowincome_limit
   )
-    
-ggplot(inr, aes(x = income_needs)) + 
-  geom_histogram(bins = 30, position = "dodge", fill = "gray", color = "black") +
-  theme_bw() 
-
 ```
 
 
@@ -82,7 +78,7 @@ inr <-
     ELS_ID = as.integer(ELS_ID)
     ) %>%
   left_join(
-    read_csv(covariates_file) %>% 
+    read_csv(tbm_covariates_file) %>% 
       select(
         ELS_ID,
         included = ICV

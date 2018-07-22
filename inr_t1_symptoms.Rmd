@@ -1,7 +1,10 @@
 ---
 title: "Effects of INR on T1 symptoms"
 author: "Lucy King"
-output: html_document
+output: 
+  github_document:
+    toc: true
+    toc_depth: 6
 ---
 
 ```{r setup, include=FALSE}
@@ -14,19 +17,29 @@ library(tidyverse)
 
 ##Parameters
 
-#files
-t1_cbcl_file <- "~/Desktop/ELS/income_TBM/data/ELS_T1S1_CBCL_old_1991_Final Profile Data_ID 1-218.sav" 
-t1_ysr_file <- "~/Desktop/ELS/income_TBM/data/ELS_T1S1_YSR_old_1991_Final Profile Data_ID 1-218.sav" 
-roi_inc_int_file <- "~/Desktop/ELS/income_TBM/data/inc_interac_46rois_all.xlsx" #clusters identified in INR*sex TBM model
-inr_file <- "~/Desktop/ELS/income_TBM/data/income_to_needs.csv"
-covariates_file <- "~/Desktop/ELS/income_TBM/data/tbm_cov_income.csv"
+#files____________________________________________________________________
+
+#parent-reported symptoms
+t1_cbcl_file <- "~/Desktop/ELS/income_TBM/data/osf/ELS_T1S1_CBCL_old_1991_Final Profile Data_ID 1-218.sav" 
+
+#child-reported symptoms
+t1_ysr_file <- "~/Desktop/ELS/income_TBM/data/osf/ELS_T1S1_YSR_old_1991_Final Profile Data_ID 1-218.sav" 
+
+#extracted estimates for all 46 ROIs identified in sex*income model
+roi_inc_int_file <- "~/Desktop/ELS/income_TBM/data/osf/inc_interac_46rois_all.xlsx" 
+
+#income-to-needs ratios
+inr_file <- "~/Desktop/ELS/income_TBM/data/osf/income_to_needs.csv"
+
+#covariates used in income TBM model
+tbm_covariates_file <- "~/Desktop/ELS/income_TBM/data/osf/tbm_cov_income.csv"
 ```
 
 ##Join data
 ```{r}
 roi_symptoms <-
   readxl::read_xlsx(roi_inc_int_file, sheet = "Vols") %>% 
-  left_join(read_csv(covariates_file), by = "ELS_ID") %>% 
+  left_join(read_csv(tbm_covariates_file), by = "ELS_ID") %>% 
   left_join(read_csv(inr_file), by = "ELS_ID") %>% 
   left_join(
     haven::read_sav(t1_cbcl_file, user_na = 999) %>% 
@@ -61,17 +74,47 @@ roi_symptoms <-
         ysr_internalizing
       )
   )
+```
 
-#male only dataset
+##Create coding for sex and race
+```{r}
+roi_symptoms <-
+  roi_symptoms %>% 
+  mutate(
+    male_simple_effect = recode(
+      Male,
+      "1" = "0",
+      "0" = "1"
+    ),
+    female_simple_effect = recode(
+      Male,
+      "1" = "1",
+      "0" = "0"
+    ),
+    sex_effect_coded = recode(
+      Male,
+      "1" = "1", #male
+      "0" = "-1" #female
+    ),
+    white_effect_coded = recode(
+      White,
+      "1" = "1",
+      "0" = "-1"
+    )
+  ) 
+```
+
+##Create separate tibbles for boys and girls
+```{r}
+#male only tibble
 roi_symptoms_male <- 
   roi_symptoms %>% 
   filter(Male == 1)
 
-#female only dataset
+#female only tibble
 roi_symptoms_female <- 
   roi_symptoms %>% 
   filter(Male == 0)
-
 ```
 
 ##Distributions of symptoms
@@ -109,34 +152,6 @@ roi_symptoms_female %>%
   theme_bw()
 ```
 
-##Create coding for sex and race; standardize continuous variables
-```{r}
-roi_symptoms <-
-  roi_symptoms %>% 
-  mutate(
-    male_simple_effect = recode(
-      Male,
-      "1" = "0",
-      "0" = "1"
-    ),
-    female_simple_effect = recode(
-      Male,
-      "1" = "1",
-      "0" = "0"
-    ),
-    sex_effect_coded = recode(
-      Male,
-      "1" = "1", #male
-      "0" = "-1" #female
-    ),
-    white_effect_coded = recode(
-      White,
-      "1" = "1",
-      "0" = "-1"
-    )
-  ) 
-```
-
 ##Externalizing
 ```{r}
 #main effect
@@ -171,12 +186,16 @@ confint(mod_sex_extern_income_cov)
 #males
 mod_male_extern_income = 
   lm(cbcl_externalizing ~ sqrt(income_needs) * male_simple_effect, data = roi_symptoms)
+
 summary(mod_male_extern_income)
+
 confint(mod_male_extern_income)
 
 mod_male_extern_income_cov = 
   lm(cbcl_externalizing ~ sqrt(income_needs) * male_simple_effect + white_effect_coded + Tanner + Age, data = roi_symptoms)
+
 summary(mod_male_extern_income_cov)
+
 confint(mod_male_extern_income_cov)
 
 summary(lm(cbcl_externalizing ~ sqrt(income_needs), data = roi_symptoms_male))
@@ -187,12 +206,16 @@ summary(lm(cbcl_externalizing ~ sqrt(income_needs) + white_effect_coded + Tanner
 #females
 mod_female_extern_income = 
   lm(cbcl_externalizing ~ sqrt(income_needs) * female_simple_effect, data = roi_symptoms)
+
 summary(mod_female_extern_income)
+
 confint(mod_female_extern_income)
 
 mod_female_extern_income_cov = 
   lm(cbcl_externalizing ~ sqrt(income_needs) * female_simple_effect +  white_effect_coded + Tanner + Age, data = roi_symptoms)
+
 summary(mod_female_extern_income_cov)
+
 confint(mod_female_extern_income_cov)
 
 summary(lm(cbcl_externalizing ~ sqrt(income_needs), data = roi_symptoms_female))
@@ -230,7 +253,7 @@ summary(mod_sex_intern_income_cov)
 confint(mod_sex_intern_income_cov)
 ```
 
-##Visualize
+##Visualize externalizing sex differences
 ```{r}
 #externalizing 
 roi_symptoms %>%
@@ -431,7 +454,7 @@ symptoms_roi <-
     by = "ELS_ID"
   ) %>% 
   left_join(
-    read_csv(covariates_file) %>% 
+    read_csv(tbm_covariates_file) %>% 
       select(
         ELS_ID,
         included = ICV

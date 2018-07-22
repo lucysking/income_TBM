@@ -1,38 +1,44 @@
 ---
 title: "Data for Table 1"
-author: "Lucy King"
-date: "6/18/2018"
-output: html_document
+output: 
+  github_document:
+    toc: true
+    toc_depth: 6
 ---
 
 ```{r}
 #Libraries
 library(tidyverse)
+library(knitr)
 
 #Parameters
-demographic_file <- "~/Desktop/ELS/income_TBM/data/demographics_table1_201803.sav"
+demographic_file <- "~/Desktop/ELS/income_TBM/data/osf/demographics_table1.csv"
 ```
 
 ```{r}
 demo <-
-  haven::read_sav(demographic_file) %>% 
+  read_csv(demographic_file) %>% 
   filter(income_needs != "NA") %>% 
-  mutate(income_needs = as.numeric(income_needs))
-```
-
-```{r}
-demo %>% 
-  count(Male)
-```
-
-```{r}
-demo %>% 
-  group_by(Male) %>% 
-  summarise_all(
-    funs(mean, sd)
+  mutate(
+    Male = as.character(Male),
+    Race = as.character(Race),
+    Household_Income = as.character(Household_Income) #income collected in bins
   )
 ```
 
+##means and standard deviations
+```{r}
+demo %>% 
+  group_by(Male) %>% 
+  select(-ELS_ID) %>% 
+  summarise_if(
+    is.numeric,
+    funs(mean, sd)
+  ) %>% 
+  kable()
+```
+
+##ranges
 ```{r}
 demo_male <-
   demo %>% 
@@ -53,7 +59,7 @@ range(demo_female$Tanner)
 range(demo_female$ICV)
 range(demo_female$income_needs)
 ```
-
+##t-tests
 ```{r}
 sex_t_test <- function(x) {
   t.test(x ~ demo$Male, var.equal = TRUE)
@@ -65,6 +71,24 @@ sex_t_test(demo$ICV)
 sex_t_test(demo$income_needs)
 ```
 
+##frequencies and chi-squares
+
+###number "low-income"
+```{r}
+demo %>% 
+  count(income_needs < 1) %>% 
+  mutate(
+    percent = n / sum(n)
+  )
+```
+
+###number male
+```{r}
+demo %>% 
+  count(Male)
+```
+
+###number each race 
 ```{r}
 demo <- 
   demo %>% 
@@ -108,13 +132,14 @@ chisq.test(demo$white, demo$Male)
 
 ```
 
+###number reporting in each income bin
 ```{r}
 demo <-
   demo %>% 
   mutate(
     income_factor = as.factor(
       if_else(
-        as.numeric(Income) > median(as.numeric(Income)),
+        as.numeric(Household_Income) > median(as.numeric(Household_Income)),
         1, 0
       )
     )
@@ -122,13 +147,4 @@ demo <-
 
 chisq.test(demo$income_factor, demo$Male)
 ```
-
-```{r}
-demo %>% 
-  count(income_needs < 1) %>% 
-  mutate(
-    percent = n / sum(n)
-  )
-```
-
 

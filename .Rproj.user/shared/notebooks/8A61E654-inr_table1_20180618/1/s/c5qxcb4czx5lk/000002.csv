@@ -1,4 +1,0 @@
-"0","demo <-"
-"0","  haven::read_sav(demographic_file) %>% "
-"0","  filter(income_needs != ""NA"") %>% "
-"0","  mutate(income_needs = as.numeric(income_needs))"

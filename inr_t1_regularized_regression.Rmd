@@ -21,26 +21,26 @@ z_score <- function(x) {
 
 #Parameters
 
-#datasets____________________________________________________________________
+#files____________________________________________________________________
 #extracted estimates for all 46 ROIs identified in sex*income model
-inc_46all <- "~/Desktop/ELS/income_TBM/data/Inc_Interac_46ROIs_ALL.xlsx"
+roi_inc_int_file <- "~/Desktop/ELS/income_TBM/data/osf/inc_interac_46rois_all.xlsx"
 
 #covariates used in income TBM model
-inc_TBM_cov <- "~/Desktop/ELS/income_TBM/data/TBM_cov_income.csv"
+tbm_covariates_file <- "~/Desktop/ELS/income_TBM/data/osf/tbm_cov_income.csv"
 
-#symptoms
-T1_CBCL <- "~/Desktop/ELS/income_TBM/data/ELS_T1S1_CBCL_old_1991_Final Profile Data_ID 1-218.sav"
+#parent-reported symptoms
+T1_CBCL <- "~/Desktop/ELS/income_TBM/data/osf/ELS_T1S1_CBCL_old_1991_Final Profile Data_ID 1-218.sav"
 
 ```
 
 ##Join data
 ```{r}
 covariates <- 
-  read_csv(inc_TBM_cov) %>%
+  read_csv(tbm_covariates_file) %>%
   mutate(ELS_ID = as.integer(ELS_ID)) 
 
 rois <- 
-  read_excel(inc_46all) %>%
+  read_excel(roi_inc_int_file) %>%
   mutate(ELS_ID = as.integer(ELS_ID))
 
 cbcl_externalizing <- 
@@ -58,6 +58,7 @@ inc_rr_boys <-
   left_join(cbcl_externalizing, by = "ELS_ID") %>%
   select(-Male, -ELS_ID)
 ```
+
 ##Regularized regression
 We have observations on n units of a DV and p predictors, where p >> n.  (In typical regressions, n ≈ 10*p > p.)  In principle, using any n of the p predictors allows us to ‘predict’ the n DV values perfectly.  However, prediction of new observations is likely to be ‘poor’.  This problem is ill-conditioned.  The data set (or system) is said to be over-determined.
 
@@ -65,7 +66,7 @@ Regularization resolves non-complementary goals of wants to drive down the sum o
 
 The elastic net (Zou & Hastie, 2005) was designed to achieve the sparseness of the LASSO, and the ability of ridge regression to select correlated features. The penalty used is a weighted average of penalties on the L1-norm and the L2-norm. This model can be rewritten as a type of LASSO and, therefore, can be estimated with the efficiency of the LASSO. Basically you are getting sparseness without losing important information, which is particularly relevent for brain data. It is like a stretchable fishing net that retains ‘all the big fish’.
 
-Choosing the value of λ under the L1-norm, which results in some bi  = 0, is like choosing which predictors to include in a stepwise regression.The optimal λ (penalty on complexity) is the value at which the AIC (or BIC or CV error) of the optimal model is a minimum. 
+Choosing the value of λ under the L1-norm, which results in some bi  = 0, is like choosing which predictors to include in a stepwise regression.The optimal λ (penalty on complexity) is the value at which the CV error of the optimal model is a minimum. 
 
 ##Prep  data for `glmnet()` models in boys
 All data are standardized so that coefficients can be interpreted as standardized. I am using the z-score function for externalizing because  `scale()` does not work on a vector. 
@@ -77,8 +78,6 @@ externalizing = z_score(inc_rr_boys$externalizing)
 ```
 
 ##Fit glmnet model for income ROIs in boys
-As lambda decreases, df(n of non-zero coeffs) increase; %Dev is like R2. In plot of lambda and deviance ratio, predictors are identified by their sequence numbers + 1 (e.g., the strongest predictor = 46 = 47). The +1 is due to the fact that the first "step" in the model is labeled "step 0". This is a confusing feature of the plot. 
-
 ```{r glmnet_inc}
 fit_inc_boys <- glmnet(predictors, externalizing, alpha = .5, family = "gaussian")
 
@@ -89,8 +88,6 @@ plot(fit_inc_boys, xvar = "dev", label = TRUE)
 ```{r}
 print(fit_inc_boys)
 ```
-
-
 
 ##Fit cross-validation model for income ROIs in boys
 Note also that the results of cv.glmnet are random, since the folds are selected at random. Users can reduce this randomness by running cv.glmnet many times, and averaging the error curves.
@@ -160,7 +157,6 @@ range(inc_lambdas$lambda1SE)
 ```
 
 We will use lambda + 1SE in order to select the most parsimonious model. This more conservative approach is best considering our small sample size. The optimal model is achieved at lambda1SE = .511. Across the 1000 runs, almost all lambda values fell between ~.55 and ~.62. Given the outlier, we will use the median lambda value across the runs.
-
 
 ##Print coeffs and plots for final model for income ROIs in boys with identified lambda
 ```{r}
