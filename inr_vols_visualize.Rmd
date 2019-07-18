@@ -1,0 +1,335 @@
+---
+title: "Probe sex * INR interactions"
+output: html_notebook
+---
+
+```{r}
+#Libraries
+library(tidyverse)
+library(readxl)
+library(modelr)
+
+#Files
+volumes_file <- "~/Desktop/ELS/income_TBM/data/final_data/inr_volumes_20190218.xlsx"
+```
+
+# Read in data
+```{r}
+vols <-
+  read_xlsx(volumes_file, sheet = "CSX Volumes") %>% 
+  rename(
+    pos_rSTG_cs = Pos_10, #superior temporal gyrus
+    pos_lIFG_cs = Pos_11, #inferior frontal gyrus
+    pos_lLOC_cs = Pos_12, #lateral occipital gyrus
+    pos_rMFG_cs = Pos_14, #middle frontal gyrus
+    pos_rSFG_cs_dlPFC = Pos_15, #superior frontal gyrus
+    pos_rPCG = Pos_16, #postcentral gyrus,
+    pos_rSFG_cs_motor = Pos_17,
+    pos_rPTR_cs = Pos_18, #posterior thalamic radiation,
+    pos_rMB_cs = Pos_19, #midbrain,
+    pos_rCV_cs = Pos_20, #cerebellar vermis,
+    neg_FG_cs = Neg_7, #fusiform gyrus,
+    neg_lThal_cs = Neg_8, #thalamus
+    neg_rHipp_cs = Neg_9, #hippocampus/CGH
+    neg_lHipp_cs = Neg_10, #hippocampus/CGH/fusiform gyrus,
+    neg_rThal_cs = Neg_11, #thalamus
+    neg_lAG_cs = Neg_12 #angular gyrus
+  ) %>% 
+  left_join(
+    read_xlsx(volumes_file, sheet = "Long Volumes") %>% 
+      rename(
+        pos_rSPL_lg = Pos_4, #superior parietal lobule
+        pos_rLG_lg = Pos_5, #lingual gyrus,
+        pos_lITG_lg = Pos_6, #inferior temporal gyrus,
+        pos_lLG_lg = Pos_7, #lingual gyrus,
+        neg_rHipp_lg = Neg_7, #hippcampus/CGH,
+        neg_lSLF_lg = Neg_8, #superior longitudinal fasciculus,
+        neg_lSFG_lg = Neg_9, #superior frontal gyrus
+        neg_rSFG_lg = Neg_10, #superior frontal gyrus
+        neg_lCerebel_lg = Neg_11, #cerebellum
+        neg_rPTR_lg = Neg_12 #posterior thalamic radiation
+      ) %>% 
+      select(-T1_ICV, -T1_Age, -White, -INR_Sex, -Sex, -INR),
+    by = "Subject"
+  ) %>% 
+  rename(ID = Subject) %>% 
+  mutate(Male = as.factor(Sex))
+
+
+```
+
+Examining associations between INR and volume cross-sectionally in males only, we did not detect any clusters that survived correction for multiple comparisons. In females, we found a significant positive association between INR and volume of the right hippocampus/CGH, left CGH, bilateral thalamus, left fusiform gyrus, left SFG and IFG, left cerebellar grey matter, and right PoG. We found a significant negative association between INR and volume of the bilateral SFG, bilateral precentral gyrus (PrG), left MFG, left ITG, left inferior occipital gyrus (IOG), right IFG, right posterior cingulate gyrus (PCC), right medial orbitofrontal cortex (mOFC), right pulvinar, and right cerebellar grey matter.
+
+Longitudinally, we again did not detect significant associations with INR in either the males or females. 
+
+# Residualize all volumes
+```{r}
+residualize_models_cs <-
+  vols %>% 
+  gather(region, volume, pos_rSTG_cs:neg_lAG_cs) %>% 
+  group_by(region) %>% 
+  nest() %>% 
+  mutate(
+    residuals = map(
+      data, 
+      ~lm(volume ~ T1_ICV + White + T1_Age, data = .)$residuals
+    )
+  ) %>% 
+  unnest() %>% 
+  mutate(
+    region = as.factor(region)
+  )
+
+residualize_models_lg <-
+  vols %>% 
+  filter(!is.na(pos_rSPL_lg)) %>% 
+  gather(region, volume, pos_rSPL_lg:neg_rPTR_lg) %>% 
+  group_by(region) %>% 
+  nest() %>% 
+  mutate(
+    residuals = map(
+      data, 
+      ~lm(volume ~ T1_ICV + White + T1_Age + Interval, data = .)$residuals
+    )
+  ) %>% 
+  unnest() %>% 
+  mutate(
+    region = as.factor(region)
+  )
+```
+
+# Visualize
+
+## Cross-sectional
+```{r}
+residualize_models_cs <-
+  residualize_models_cs %>% 
+  mutate(
+    region_named = factor(
+      region,
+      levels = c(
+        "pos_rCV_cs", 
+        "pos_rMB_cs", 
+        "pos_rPTR_cs", 
+        "pos_rSFG_cs_motor", 
+        "pos_rPCG",
+        "pos_rSFG_cs_dlPFC",
+        "pos_rMFG_cs",
+        "pos_lLOC_cs",
+        "pos_lIFG_cs",
+        "pos_rSTG_cs",
+        "neg_lAG_cs",
+        "neg_rThal_cs", 
+        "neg_lHipp_cs", 
+        "neg_rHipp_cs", 
+        "neg_lThal_cs", 
+        "neg_FG_cs"
+      ),
+      labels = c(
+        "Right CV (3, -47, -35)",
+        "Right midbrain WM (3, -32, -4)",
+        "Right PTR (40, -55, 2)",
+        "Right SFG (9, -8, 54)",
+        "Right PoG (15, -32, 69)",
+        "Right SFG (11, 46, 45)",
+        "Right MFG (51, 38, 5)",
+        "Left LOG (-23, -89, 3)",
+        "Left IFG (-48, 46, -8)",
+        "Right STG (63, -47, 19)",
+        "Left AG (-46, -39, 33)",
+        "Right thalamus (13, -23, 8)",
+        "Left hipp./HC/FG (-29, -19, -33)",
+        "Right hipp./HC (23, -14, -23)",
+        "Left thalamus (-9, -24, 10)",
+        "Left FG (-49, -49, -16)*"
+      )
+    ),
+    Sex = factor(
+      Male, 
+      levels = c(0, 1),
+      labels = c("Female", "Male")
+    )
+  )
+
+```
+
+```{r}
+residualize_models_cs %>% 
+  filter(str_detect(region, "neg")) %>% 
+  ggplot(aes(INR, residuals, color = Sex, fill = Sex)) +
+  geom_point(size = 3, alpha = 1/2) +
+  geom_smooth(method = "lm", formula = y ~ sqrt(x), size = 2) +
+  scale_x_continuous(breaks = seq.int(0, 2, .25)) +
+  scale_color_manual(
+    values = c("darkred", "royalblue4")
+  ) +
+  scale_fill_manual(
+    values = c("darkred", "royalblue4")
+  ) +
+  theme_minimal() +
+  theme(
+    legend.title = element_blank(),
+    axis.title = element_text(size = 24),
+    axis.text = element_text(size = 18),
+    legend.text = element_text(size = 22),
+    strip.text = element_text(size = 16.5),
+    legend.key.size = unit(2, 'lines')
+  ) +
+  facet_wrap(.~region_named) +
+  labs(
+    y = "Change in volume from earlier to later adolescence\n(residuals)",
+    x = "Family income-to-needs ratio"
+  )
+
+ggsave(
+  "~/Desktop/ELS/income_TBM/income_TBM_sync/plots/neg_cross-sectional.png",
+  height = 11,
+  width = 13
+)
+```
+
+```{r}
+residualize_models_cs %>% 
+  filter(str_detect(region, "pos")) %>% 
+  ggplot(aes(INR, residuals, color = Sex, fill = Sex)) +
+  geom_point(size = 3, alpha = 1/2) +
+  geom_smooth(method = "lm", formula = y ~ sqrt(x), size = 2) +
+  #scale_x_continuous(breaks = seq.int(0, 2, .2)) +
+  scale_color_manual(
+    values = c("darkred", "royalblue4")
+  ) +
+  scale_fill_manual(
+    values = c("darkred", "royalblue4")
+  ) +
+  theme_minimal() +
+  theme(
+    legend.title = element_blank(),
+    axis.title = element_text(size = 24),
+    axis.text = element_text(size = 18),
+    legend.text = element_text(size = 22),
+    strip.text = element_text(size = 16),
+    legend.key.size = unit(2, 'lines')
+  ) +
+  facet_wrap(.~region_named) +
+  labs(
+    y = "Change in volume from earlier to later adolescence\n(residuals)",
+    x = "Family income-to-needs ratio"
+  )
+
+ggsave(
+  "~/Desktop/ELS/income_TBM/income_TBM_sync/plots/pos_cross-sectional.png",
+  height = 12,
+  width = 15.5
+)
+```
+
+
+## Longitudinal
+```{r}
+residualize_models_lg <-
+  residualize_models_lg %>% 
+  mutate(
+    region_named = factor(
+      region,
+      levels = c(
+        "pos_lLG_lg",
+        "pos_lITG_lg",
+        "pos_rLG_lg",
+        "pos_rSPL_lg",
+        "neg_rPTR_lg",
+        "neg_lCerebel_lg",
+        "neg_rSFG_lg",
+        "neg_lSFG_lg",
+        "neg_lSLF_lg",
+        "neg_rHipp_lg"
+      ),
+      labels = c(
+        "Left LG (-20, -75, -5)",
+        "Left ITG (-48, 1, -40)",
+        "Right LG (12, -73, -9)",
+        "R SPL (27, -60, 56)",
+        "Right PTR (24, -70, 7)",
+        "Left cerebellum (-18, -66, -21)",
+        "Right SFG (17, -5, 58)",
+        "Left SFG (-16, 62, -10)",
+        "Left SLF (-33, -44, 16)",
+        "Right hipp./HC (26, -33, -7)"
+      )
+    ),
+    Sex = factor(
+      Male, 
+      levels = c(0, 1),
+      labels = c("Female", "Male")
+    )
+  ) 
+```
+
+```{r}
+residualize_models_lg %>% 
+  filter(str_detect(region, "neg")) %>% 
+  ggplot(aes(INR, residuals, color = Sex, fill = Sex)) +
+  geom_point(size = 3, alpha = 1/2) +
+  geom_smooth(method = "lm", formula = y ~ sqrt(x), size = 2) +
+  scale_x_continuous(breaks = seq.int(0, 2, .25)) +
+  scale_color_manual(
+    values = c("darkred", "royalblue4")
+  ) +
+  scale_fill_manual(
+    values = c("darkred", "royalblue4")
+  ) +
+  theme_minimal() +
+  theme(
+    legend.title = element_blank(),
+    axis.title = element_text(size = 24),
+    axis.text = element_text(size = 18),
+    legend.text = element_text(size = 22),
+    strip.text = element_text(size = 18),
+    legend.key.size = unit(2, 'lines')
+  ) +
+  facet_wrap(.~region_named) +
+  labs(
+    y = "Change in volume from earlier to later adolescence\n(residuals)",
+    x = "Family income-to-needs ratio"
+  )
+
+ggsave(
+  "~/Desktop/ELS/income_TBM/income_TBM_sync/plots/neg_longitudinal.png",
+  height = 11,
+  width = 13
+)
+```
+
+```{r}
+residualize_models_lg %>% 
+  filter(str_detect(region, "pos")) %>% 
+  ggplot(aes(INR, residuals, color = Sex, fill = Sex)) +
+  geom_point(size = 3, alpha = 1/2) +
+  geom_smooth(method = "lm", formula = y ~ sqrt(x), size = 2) +
+  scale_x_continuous(breaks = seq.int(0, 2, .25)) +
+  scale_color_manual(
+    values = c("darkred", "royalblue4")
+  ) +
+  scale_fill_manual(
+    values = c("darkred", "royalblue4")
+  ) +
+  theme_minimal() +
+  theme(
+    legend.title = element_blank(),
+    axis.title = element_text(size = 24),
+    axis.text = element_text(size = 18),
+    legend.text = element_text(size = 22),
+    strip.text = element_text(size = 18),
+    legend.key.size = unit(2, 'lines')
+  ) +
+  facet_wrap(.~region_named) +
+  labs(
+    y = "Change in volume from earlier to later adolescence\n(residuals)",
+    x = "Family income-to-needs ratio"
+  )
+
+ggsave(
+  "~/Desktop/ELS/income_TBM/income_TBM_sync/plots/pos_longitudinal.png",
+  height = 11,
+  width = 13
+)
+```

@@ -70,30 +70,3 @@ inr <-
 ```
 
 
-###Compare those included in sample to those not
-```{r}
-inr <- 
-  inr %>% 
-  mutate(
-    ELS_ID = as.integer(ELS_ID)
-    ) %>%
-  left_join(
-    read_csv(tbm_covariates_file) %>% 
-      select(
-        ELS_ID,
-        included = ICV
-      ) %>% 
-      mutate(ELS_ID = as.integer(ELS_ID)),
-    by = "ELS_ID"
-  ) %>% 
-  mutate(
-    included = if_else(
-      !is.na(included), 
-      "included", "not"
-    )
-  )
-
-t.test(inr$income_needs ~ inr$included)
-```
-```
-

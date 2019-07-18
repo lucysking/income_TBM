@@ -1,2 +1,0 @@
-"0","fit_inc_boys <- glmnet(predictors, externalizing, alpha = .5, family = ""gaussian"")"
-"0","plot(fit_inc_boys, xvar = ""lambda"", label = TRUE)"

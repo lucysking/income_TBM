@@ -1,7 +1,0 @@
-"0","##Libraries"
-"0","library(tidyverse)"
-"0","##Parameters"
-"0","#files"
-"0","demo_full_file <- ""~/Desktop/ELS/income_TBM/data/120616_ELS_T1S1_Demographics Golden Standard.sav"""
-"0","#in SPSS file, first cleaned variable ""pplinhome_1_TEXT"" and converted to numeric "
-"0","covariates_file <- ""~/Desktop/ELS/income_TBM/data/tbm_cov_income.csv"""

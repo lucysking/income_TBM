@@ -10,70 +10,273 @@ output:
 #Libraries
 library(tidyverse)
 library(knitr)
+library(haven)
+library(readxl)
 
 #Parameters
-demographic_file <- "~/Desktop/ELS/income_TBM/data/osf/demographics_table1.csv"
+demo_t1_file <- "~/Desktop/ELS/income_TBM/data/final_data/demographics_golden_standard.T1.sav"
+demo_t2_file <- "~/Desktop/ELS/income_TBM/data/final_data/demographics_golden_standard.T2.sav"
+inr_threat_file <- "~/Desktop/ELS/income_TBM/data/final_data/income_threat.csv"
+included_file <- "~/Desktop/ELS/income_TBM/data/final_data/included_ids.csv"
+volumes_file <- "~/Desktop/ELS/income_TBM/data/final_data/inr_volumes_20190218.xlsx"
+```
+
+# Read in data 
+```{r}
+included <-
+  read_csv(included_file) %>% 
+  rename(
+    included_t1 = included 
+  )
 ```
 
 ```{r}
 demo <-
-  read_csv(demographic_file) %>% 
-  filter(income_needs != "NA") %>% 
+  read_sav(demo_t1_file) %>% 
+  select(
+    ELS_ID,
+    income = T1_Parent_Income,
+    race_pr = T1_KSADS_Child_Race_by_P,
+    T1_Tanner_female_pubhair:T1_Tanner_male_testes
+  ) %>% 
+  left_join(
+    read_csv(inr_threat_file),
+    by = "ELS_ID"
+  ) %>% 
+  left_join(
+    read_xlsx(volumes_file, sheet = "CSX Volumes") %>% 
+      select(
+        ELS_ID = Subject, 
+        T1_ICV:Sex
+      ),
+    by = "ELS_ID"
+  ) %>% 
+  left_join(
+    read_xlsx(volumes_file, sheet = "Long Volumes") %>% 
+      select(
+        ELS_ID = Subject,
+        interval = Interval
+      )
+  ) %>% 
+  left_join(
+    included,
+    by = "ELS_ID"
+  ) %>% 
   mutate(
-    Male = as.character(Male),
-    Race = as.character(Race),
-    Household_Income = as.character(Household_Income) #income collected in bins
+    tanner_pb = if_else(
+      is.na(T1_Tanner_female_pubhair), 
+      T1_Tanner_male_pubhair, 
+      T1_Tanner_female_pubhair
+    ),
+    tanner_bt = if_else(
+      is.na(T1_Tanner_female_breasts),
+      T1_Tanner_male_testes,
+      T1_Tanner_female_breasts
+    ),
+    included_t1 = as.numeric(!is.na(included_t1)),
+    included_t2 = as.numeric(!is.na(interval))
+  ) %>% 
+  group_by(ELS_ID) %>% 
+  mutate(
+    tanner_av = mean(
+      c(tanner_pb, tanner_bt),
+      na.rm = TRUE
+    ),
+    T2_Age = T1_Age + interval 
+  ) %>% 
+  ungroup()
+```
+
+
+
+# Missing data analyses
+```{r}
+t.test(sumsev_type_THRT ~ included_t1, data = demo)
+t.test(income_needs ~ included_t1, data = demo)
+
+demo <-
+  demo %>% 
+  filter(included_t1 == 1)
+```
+
+```{r}
+demo %>% 
+  count(Sex) %>% 
+  mutate(
+    per = n / sum(n)
   )
 ```
 
-##means and standard deviations
 ```{r}
 demo %>% 
-  group_by(Male) %>% 
-  select(-ELS_ID) %>% 
-  summarise_if(
-    is.numeric,
-    funs(mean, sd)
+  count(income_needs < 1) %>% 
+  mutate(
+    per = n / sum(n)
+  )
+```
+
+```{r}
+demo %>%
+  count(tanner_av <= 3) %>% 
+  mutate(
+    per = n / sum(n)
+  )
+```
+
+```{r}
+demo %>% 
+  summarise_at(
+    vars(interval, sumsev_type_THRT, income_needs, T1_Age, T2_Age, tanner_av),
+    list(~mean, ~sd, ~min, ~max), na.rm = TRUE
+  )
+
+demo %>% 
+  group_by(Sex) %>% 
+  summarise_at(
+    vars(interval, sumsev_type_THRT, income_needs, T1_Age, T2_Age, tanner_av),
+    list(~mean, ~sd, ~min, ~max), na.rm = TRUE
+  )
+```
+
+```{r}
+cor.test(demo$sumsev_type_THRT, demo$income_needs)
+```
+
+# Create table
+```{r}
+descriptives <- 
+  demo %>% 
+  group_by(Sex) %>% 
+  summarise_at(
+    vars(
+      T1_Age, 
+      tanner_av,
+      income_needs,
+      sumsev_type_THRT,
+      interval
+    ),
+    list(~mean),
+    na.rm = TRUE
   ) %>% 
-  kable()
+  gather(variable, Mean, T1_Age:interval) %>% 
+  left_join(
+    demo %>% 
+      filter(included_t1 == 1, !is.na(Sex)) %>% 
+      group_by(Sex) %>% 
+      summarise_at(
+        vars(
+          T1_Age, 
+          tanner_av,
+          income_needs,
+          sumsev_type_THRT,
+          interval
+        ),
+        list(~sd),
+        na.rm = TRUE
+      ) %>% 
+      gather(variable, SD, T1_Age:interval),
+    by = c("variable", "Sex")
+  ) %>% 
+  mutate_at(
+    vars(starts_with("Mean"), starts_with("SD")),
+    list(~round), digits = 2
+  ) %>% 
+  unite("Mean_SD", Mean, SD) %>% 
+  mutate_at(
+    vars(Mean_SD),
+    list(
+      ~str_replace(
+        .,
+        "_", " ("
+      )
+    )
+  ) %>% 
+  mutate_at(
+    vars(Mean_SD),
+    list(
+      ~paste0(. , ")")
+    )
+  ) %>% 
+  spread(Sex, Mean_SD) %>% 
+  rename(
+    Boys = `0`,
+    Girls = `1`
+  ) 
 ```
 
-##ranges
 ```{r}
-demo_male <-
+race_ethn_descriptives <- 
   demo %>% 
-  filter(Male == 1)
+  filter(included_t1 == 1, !is.na(Sex)) %>% 
+  group_by(Sex) %>% 
+  count(
+    race_pr
+  ) %>% 
+  mutate(
+    race_pr = case_when(
+      race_pr == 1 ~ "Caucasian",
+      race_pr == 2 ~ "African American",
+      race_pr == 3 ~ "Hispanic",
+      race_pr == 4 ~ "Asian",
+      race_pr == 5 ~ "Biracial",
+      race_pr == 6 ~ "Other",
+      TRUE ~ "Not reported"
+    )
+  ) %>% 
+  rename(variable = race_pr) %>% 
+  arrange(desc(n)) %>% 
+  ungroup() %>% 
+  mutate(
+    Sex = recode(
+      Sex,
+      "0" = "Girls",
+      "1" = "Boys"
+    )
+  ) %>% 
+  select(
+    variable,
+    everything()
+  ) %>% 
+  spread(Sex, n) %>% 
+  mutate_at(
+    vars(Boys, Girls),
+    as.character
+  )
 
-range(demo_male$Age)
-range(demo_male$Tanner)
-range(demo_male$ICV)
+descriptives <-
+  descriptives %>% 
+  bind_rows(race_ethn_descriptives)
+
+descriptives %>% knitr::kable()
 ```
 
-```{r}
-demo_female <-
-  demo %>% 
-  filter(Male == 0)
-
-range(demo_female$Age)
-range(demo_female$Tanner)
-range(demo_female$ICV)
-range(demo_female$income_needs)
-```
-##t-tests
+# sex differences
 ```{r}
 sex_t_test <- function(x) {
-  t.test(x ~ demo$Male, var.equal = TRUE)
+  t.test(x ~ demo$Sex)
 }
 
-sex_t_test(demo$Age)
-sex_t_test(demo$Tanner)
-sex_t_test(demo$ICV)
+sex_t_test(demo$sumsev_type_THRT)
 sex_t_test(demo$income_needs)
+sex_t_test(demo$T1_Age)
+sex_t_test(demo$T2_Age)
+sex_t_test(demo$tanner_av)
+sex_t_test(demo$interval)
 ```
 
-##frequencies and chi-squares
+```{r}
+chisq.test(demo$White, demo$Sex)
+```
 
-###number "low-income"
+
+
+
+
+
+
+# frequencies and chi-squares
+
+## number "low-income"
 ```{r}
 demo %>% 
   count(income_needs < 1) %>% 
@@ -82,10 +285,10 @@ demo %>%
   )
 ```
 
-###number male
+## number male
 ```{r}
 demo %>% 
-  count(Male)
+  count(male)
 ```
 
 ###number each race 
