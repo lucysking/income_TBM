@@ -31,13 +31,60 @@ included <-
 ```
 
 ```{r}
+demo_t2 <-
+  read_sav(demo_t2_file) %>% 
+  mutate(
+    tanner_pb_t2s1 = if_else(
+      is.na(T2S1_Tanner_female_pubhair), 
+      T2S1_Tanner_male_pubhair, 
+      T2S1_Tanner_female_pubhair
+    ),
+    tanner_bt_t2s1 = if_else(
+      is.na(T2S1_Tanner_female_breasts),
+      T2S1_Tanner_male_testes,
+      T2S1_Tanner_female_breasts
+    ),
+    tanner_pb_t2s2 = if_else(
+      is.na(T2S2_Tanner_female_pubhair), 
+      T2S2_Tanner_male_pubhair, 
+      T2S2_Tanner_female_pubhair
+    ),
+    tanner_bt_t2s2 = if_else(
+      is.na(T2S2_Tanner_female_breasts),
+      T2S2_Tanner_male_testes,
+      T2S2_Tanner_female_breasts
+    )
+  ) %>% 
+  group_by(ELS_ID) %>% 
+  mutate(
+    tanner_av_t2s1 = mean(
+      c(tanner_pb_t2s1, tanner_bt_t2s1),
+      na.rm = TRUE
+    ),
+    tanner_av_t2s2 = mean(
+      c(tanner_pb_t2s2, tanner_bt_t2s2),
+      na.rm = TRUE
+    )
+  )
+
+```
+
+
+```{r}
 demo <-
   read_sav(demo_t1_file) %>% 
   select(
     ELS_ID,
     income = T1_Parent_Income,
     race_pr = T1_KSADS_Child_Race_by_P,
-    T1_Tanner_female_pubhair:T1_Tanner_male_testes
+    T1_Tanner_female_pubhair:T1_Tanner_male_testes,
+    T1_Child_Sex
+  ) %>% 
+  mutate(
+    sex = if_else(
+      T1_Child_Sex == 1,
+      "male", "female" 
+    )
   ) %>% 
   left_join(
     read_csv(inr_threat_file),
@@ -47,7 +94,7 @@ demo <-
     read_xlsx(volumes_file, sheet = "CSX Volumes") %>% 
       select(
         ELS_ID = Subject, 
-        T1_ICV:Sex
+        T1_ICV:T1_Age
       ),
     by = "ELS_ID"
   ) %>% 
@@ -73,8 +120,18 @@ demo <-
       T1_Tanner_male_testes,
       T1_Tanner_female_breasts
     ),
-    included_t1 = as.numeric(!is.na(included_t1)),
-    included_t2 = as.numeric(!is.na(interval))
+    included_t1 = as.factor(
+      if_else(
+        !is.na(included_t1),
+        1, 0
+      )
+    ),
+    included_t2 = as.factor(
+      if_else(
+        !is.na(interval),
+        1, 0
+      )
+    )
   ) %>% 
   group_by(ELS_ID) %>% 
   mutate(
@@ -82,17 +139,26 @@ demo <-
       c(tanner_pb, tanner_bt),
       na.rm = TRUE
     ),
-    T2_Age = T1_Age + interval 
+    T2_Age = T1_Age + interval
   ) %>% 
-  ungroup()
+  left_join(
+    demo_t2 %>% 
+      select(
+        tanner_av_t2s1,
+        tanner_av_t2s2
+      )
+    ) %>% 
+  ungroup() %>% 
+  distinct(ELS_ID, .keep_all = TRUE)
 ```
 
 
 
 # Missing data analyses
 ```{r}
-t.test(sumsev_type_THRT ~ included_t1, data = demo)
 t.test(income_needs ~ included_t1, data = demo)
+chisq.test(demo$sex, demo$included_t1)
+chisq.test(demo$sex, demo$included_t2)
 
 demo <-
   demo %>% 
@@ -101,7 +167,7 @@ demo <-
 
 ```{r}
 demo %>% 
-  count(Sex) %>% 
+  count(sex) %>% 
   mutate(
     per = n / sum(n)
   )
@@ -131,9 +197,9 @@ demo %>%
   )
 
 demo %>% 
-  group_by(Sex) %>% 
+  group_by(sex) %>% 
   summarise_at(
-    vars(interval, sumsev_type_THRT, income_needs, T1_Age, T2_Age, tanner_av),
+    vars(interval, sumsev_type_THRT, income_needs, T1_Age, T2_Age, tanner_av, tanner_av_t2s1),
     list(~mean, ~sd, ~min, ~max), na.rm = TRUE
   )
 ```
@@ -146,7 +212,7 @@ cor.test(demo$sumsev_type_THRT, demo$income_needs)
 ```{r}
 descriptives <- 
   demo %>% 
-  group_by(Sex) %>% 
+  group_by(sex) %>% 
   summarise_at(
     vars(
       T1_Age, 
@@ -161,8 +227,8 @@ descriptives <-
   gather(variable, Mean, T1_Age:interval) %>% 
   left_join(
     demo %>% 
-      filter(included_t1 == 1, !is.na(Sex)) %>% 
-      group_by(Sex) %>% 
+      filter(included_t1 == 1, !is.na(sex)) %>% 
+      group_by(sex) %>% 
       summarise_at(
         vars(
           T1_Age, 
@@ -175,7 +241,7 @@ descriptives <-
         na.rm = TRUE
       ) %>% 
       gather(variable, SD, T1_Age:interval),
-    by = c("variable", "Sex")
+    by = c("variable", "sex")
   ) %>% 
   mutate_at(
     vars(starts_with("Mean"), starts_with("SD")),
@@ -197,18 +263,18 @@ descriptives <-
       ~paste0(. , ")")
     )
   ) %>% 
-  spread(Sex, Mean_SD) %>% 
+  spread(sex, Mean_SD) %>% 
   rename(
-    Boys = `0`,
-    Girls = `1`
+    Boys = male,
+    Girls = female
   ) 
 ```
 
 ```{r}
 race_ethn_descriptives <- 
   demo %>% 
-  filter(included_t1 == 1, !is.na(Sex)) %>% 
-  group_by(Sex) %>% 
+  filter(included_t1 == 1, !is.na(sex)) %>% 
+  group_by(sex) %>% 
   count(
     race_pr
   ) %>% 
@@ -226,18 +292,15 @@ race_ethn_descriptives <-
   rename(variable = race_pr) %>% 
   arrange(desc(n)) %>% 
   ungroup() %>% 
-  mutate(
-    Sex = recode(
-      Sex,
-      "0" = "Girls",
-      "1" = "Boys"
-    )
-  ) %>% 
   select(
     variable,
     everything()
   ) %>% 
-  spread(Sex, n) %>% 
+  spread(sex, n) %>% 
+  rename(
+    Boys = male,
+    Girls = female
+  ) %>% 
   mutate_at(
     vars(Boys, Girls),
     as.character
@@ -245,7 +308,12 @@ race_ethn_descriptives <-
 
 descriptives <-
   descriptives %>% 
-  bind_rows(race_ethn_descriptives)
+  bind_rows(race_ethn_descriptives) %>% 
+  select(
+    variable,
+    Boys, 
+    Girls
+  )
 
 descriptives %>% knitr::kable()
 ```
@@ -253,7 +321,7 @@ descriptives %>% knitr::kable()
 # sex differences
 ```{r}
 sex_t_test <- function(x) {
-  t.test(x ~ demo$Sex)
+  t.test(x ~ demo$sex)
 }
 
 sex_t_test(demo$sumsev_type_THRT)
@@ -262,10 +330,11 @@ sex_t_test(demo$T1_Age)
 sex_t_test(demo$T2_Age)
 sex_t_test(demo$tanner_av)
 sex_t_test(demo$interval)
+sex_t_test(demo$tanner_av_t2s1)
 ```
 
 ```{r}
-chisq.test(demo$White, demo$Sex)
+chisq.test(demo$White, demo$sex)
 ```
 
 
@@ -288,15 +357,15 @@ demo %>%
 ## number male
 ```{r}
 demo %>% 
-  count(male)
+  count(sex)
 ```
 
-###number each race 
+##number each race 
 ```{r}
 demo <- 
   demo %>% 
   mutate(
-    Race = as.character(Race),
+    Race = as.character(race_pr),
     Race = dplyr::recode(
       Race,
       "1" = "Caucasian",
@@ -309,21 +378,21 @@ demo <-
   )
 
 demo %>% 
-  group_by(Male, Race) %>% 
+  group_by(sex, Race) %>% 
   summarise(
     n = n()
   ) %>% 
   mutate(
     percent = n / sum(n)
   ) %>% 
-  arrange(Male, desc(percent))
+  arrange(sex, desc(percent))
 
 
 demo <-
   demo %>% 
   mutate(
     white = as.factor(
-      recode(
+      dplyr::recode(
         Race,
         "Caucasian" = 1,
         .default = 0
@@ -331,23 +400,141 @@ demo <-
     )
   )
 
-chisq.test(demo$white, demo$Male)
+chisq.test(demo$white, demo$sex)
 
 ```
 
-###number reporting in each income bin
+
+# Distributions
 ```{r}
-demo <-
-  demo %>% 
+demo %>% 
   mutate(
-    income_factor = as.factor(
-      if_else(
-        as.numeric(Household_Income) > median(as.numeric(Household_Income)),
-        1, 0
-      )
-    )
+    income = sjlabelled::as_label(income)
+  ) %>% 
+  count(income)
+
+demo %>% 
+  filter(!is.na(income)) %>% 
+  mutate(
+    income = sjlabelled::as_label(income)
+  ) %>% 
+  ggplot(aes(income)) +
+  geom_bar(stat = "count") +
+  scale_y_continuous(breaks = seq.int(0, 60, 10)) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(size = 12, angle = 300, hjust = -.01),
+    axis.text.y = element_text(size = 12),
+    axis.title = element_text(size = 16)
+  ) +
+  labs(
+    x = "Family income",
+    y = "Count"
   )
 
-chisq.test(demo$income_factor, demo$Male)
+ggsave(
+  "~/Desktop/ELS/income_TBM/income_TBM_sync/plots/income_bins_hist.png",
+  height = 7,
+  width = 11
+  )
+
+demo %>% 
+  ggplot(aes(income_needs)) +
+  geom_histogram() +
+  #scale_y_continuous(breaks = seq.int(0, 60, 10)) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12),
+    axis.title = element_text(size = 16)
+  ) +
+  labs(
+    x = "Income-to-needs ratio",
+    y = "Count"
+  )
+
+ggsave(
+  "~/Desktop/ELS/income_TBM/income_TBM_sync/plots/income_needs_hist.png",
+  height = 7,
+  width = 11
+  )
+```
+
+```{r}
+demo %>% 
+  ggplot(aes(x = T1_Age, fill = sex)) +
+  geom_histogram()
+
+demo %>% 
+  ggplot(aes(x = T1_Age, fill = sex)) +
+  geom_density(alpha = 1/2) +
+  scale_fill_manual(
+    values = c("red", "blue"),
+    labels = c("Girls", "Boys")
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12),
+    axis.title = element_text(size = 16),
+    legend.text = element_text(size = 14)
+  ) +
+  labs(
+    fill = NULL,
+    x = "Age (years) at T1",
+    y = "Count"
+  )
+
+ggsave(
+  "~/Desktop/ELS/income_TBM/income_TBM_sync/plots/age_sex_density.png",
+  height = 7,
+  width = 11
+  )
+
+demo_agematch <-
+  demo %>% 
+  filter(T1_Age >= 11 & T1_Age <= 12)
+
+demo_agematch %>% 
+  count(sex)
+
+demo_agematch %>% 
+  count(included_t2)
+
+t.test(demo_agematch$T1_Age ~ demo_agematch$sex)
+t.test(demo_agematch$tanner_av ~ demo_agematch$sex)
+
+demo_agematch %>% 
+  group_by(sex) %>% 
+  summarize_at(
+    vars(T1_Age),
+    list(~mean, ~sd)
+  )
+
+demo_agematch %>% 
+  ggplot(aes(x = T1_Age, fill = sex)) +
+  geom_density(alpha = 1/2) +
+  scale_fill_manual(
+    values = c("red", "blue"),
+    labels = c("Girls", "Boys")
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12),
+    axis.title = element_text(size = 16),
+    legend.text = element_text(size = 14)
+  ) +
+  labs(
+    fill = NULL,
+    x = "Age (years) at T1",
+    y = "Count"
+  )
+
+demo_agematch_IDs <-
+  demo_agematch %>% 
+  select(ELS_ID)
+
+write_csv(demo_agematch_IDs, "~/Desktop/ELS/income_TBM/data/final_data/age_matched_IDs.csv")
 ```
 

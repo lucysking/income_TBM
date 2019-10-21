@@ -8,9 +8,12 @@ output: html_notebook
 library(tidyverse)
 library(readxl)
 library(modelr)
+library(sjstats)
+library(car)
 
 #Files
 volumes_file <- "~/Desktop/ELS/income_TBM/data/final_data/inr_volumes_20190218.xlsx"
+age_match_ids_file <- "~/Desktop/ELS/income_TBM/data/final_data/age_matched_ids.csv"
 ```
 
 # Read in data
@@ -53,16 +56,919 @@ vols <-
     by = "Subject"
   ) %>% 
   rename(ID = Subject) %>% 
-  mutate(Male = as.factor(Sex))
+  mutate(Male = as.factor(Sex)) %>% 
+  left_join(
+    read_csv(age_match_ids_file) %>% 
+      rename(
+        ID = ELS_ID
+      ) %>% 
+      mutate(
+        age_matched = 1
+      ),
+      by = "ID"
+  )
+```
 
+```{r}
+vols_match <-
+  vols %>% 
+  filter(age_matched == 1)
+```
+
+# Cross-sectional simple effect regressions
+
+```{r}
+#cerebellar vermis
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm1F <- lm(pos_rCV_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm1F)
+std_beta(lm1F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm1M <- lm(pos_rCV_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm1M)
+std_beta(lm1M)
+
+outlierTest(lm1F) 
 
 ```
 
-Examining associations between INR and volume cross-sectionally in males only, we did not detect any clusters that survived correction for multiple comparisons. In females, we found a significant positive association between INR and volume of the right hippocampus/CGH, left CGH, bilateral thalamus, left fusiform gyrus, left SFG and IFG, left cerebellar grey matter, and right PoG. We found a significant negative association between INR and volume of the bilateral SFG, bilateral precentral gyrus (PrG), left MFG, left ITG, left inferior occipital gyrus (IOG), right IFG, right posterior cingulate gyrus (PCC), right medial orbitofrontal cortex (mOFC), right pulvinar, and right cerebellar grey matter.
+```{r}
+#cerebellar vermis: age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm1Fa <- lm(pos_rCV_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm1Fa)
+std_beta(lm1Fa)
 
-Longitudinally, we again did not detect significant associations with INR in either the males or females. 
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm1Ma <- lm(pos_rCV_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm1Ma)
+std_beta(lm1Ma)
+```
+
+
+```{r}
+#midbrain
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm2F <- lm(pos_rMB_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm1F)
+std_beta(lm2F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm2M <- lm(pos_rMB_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm2M)
+std_beta(lm2M)
+
+outlierTest(lm1F) 
+```
+
+```{r}
+#midbrain: age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm2Fa <- lm(pos_rMB_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm2Fa)
+std_beta(lm2Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm2Ma <- lm(pos_rMB_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm2Ma)
+std_beta(lm2Ma)
+```
+
+```{r}
+#posterior thalamic radiation
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm3F <- lm(pos_rPTR_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm3F)
+std_beta(lm3F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm3M <- lm(pos_rPTR_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm3M)
+std_beta(lm3M)
+
+outlierTest(lm3F) 
+```
+
+```{r}
+#posterior thalamic radiation: age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm3Fa <- lm(pos_rPTR_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm3Fa)
+std_beta(lm3Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm3Ma <- lm(pos_rPTR_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm3Ma)
+std_beta(lm3Ma)
+```
+
+```{r}
+#SFG 1
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm4F <- lm(pos_rSFG_cs_motor ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm4F)
+std_beta(lm4F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm4M <- lm(pos_rSFG_cs_motor ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm4M)
+std_beta(lm4M)
+
+outlierTest(lm4F) 
+```
+
+```{r}
+#SFG 1: age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm4Fa <- lm(pos_rSFG_cs_motor ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm4Fa)
+std_beta(lm4Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm4Ma <- lm(pos_rSFG_cs_motor ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm4Ma)
+std_beta(lm4Ma)
+```
+
+```{r}
+#post central gyrus
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm5F <- lm(pos_rPCG ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm5F)
+std_beta(lm5F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm5M <- lm(pos_rPCG ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm5M)
+std_beta(lm5M)
+
+outlierTest(lm5F)
+```
+
+```{r}
+#post central gyrus: age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm5Fa <- lm(pos_rPCG ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm5Fa)
+std_beta(lm5Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm5Ma <- lm(pos_rPCG ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm5Ma)
+std_beta(lm5Ma)
+```
+
+```{r}
+#SFG 2 
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm6F <- lm(pos_rSFG_cs_dlPFC ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm6F)
+std_beta(lm6F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm6M <- lm(pos_rSFG_cs_dlPFC ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm6M)
+std_beta(lm6M)
+
+outlierTest(lm6F)
+```
+
+```{r}
+#SFG 2 : age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm6Fa <- lm(pos_rSFG_cs_dlPFC ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm6Fa)
+std_beta(lm6Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm6Ma <- lm(pos_rSFG_cs_dlPFC ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm6Ma)
+std_beta(lm6Ma)
+```
+
+```{r}
+#MFG  
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm7F <- lm(pos_rMFG_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm7F)
+std_beta(lm7F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm7M <- lm(pos_rMFG_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm7M)
+std_beta(lm7M)
+
+outlierTest(lm7F)
+```
+
+```{r}
+#MFG: age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm7Fa <- lm(pos_rMFG_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm7Fa)
+std_beta(lm7Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm7Ma <- lm(pos_rMFG_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm7Ma)
+std_beta(lm7Ma)
+```
+
+```{r}
+#laterial occiptal gyrus  
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm8F <- lm(pos_lLOC_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm8F)
+std_beta(lm8F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm8M <- lm(pos_lLOC_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm8M)
+std_beta(lm8M)
+
+outlierTest(lm8M)
+```
+
+```{r}
+#laterial occiptal gyrus: age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm8Fa <- lm(pos_lLOC_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm8Fa)
+std_beta(lm8Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm8Ma <- lm(pos_lLOC_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm8Ma)
+std_beta(lm8Ma)
+```
+
+```{r}
+#inferior frontal gyrus
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm9F <- lm(pos_lIFG_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm9F)
+std_beta(lm9F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm9M <- lm(pos_lIFG_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm9M)
+std_beta(lm9M)
+
+outlierTest(lm9M)
+```
+
+```{r}
+#inferior frontal gyrus: age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm9Fa <- lm(pos_lIFG_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm9Fa)
+std_beta(lm9Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm9Ma <- lm(pos_lIFG_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm9Ma)
+std_beta(lm9Ma)
+```
+
+```{r}
+#superior temporal gyrus
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm10F <- lm(pos_rSTG_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm10F)
+std_beta(lm10F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm10M <- lm(pos_rSTG_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm10M)
+std_beta(lm10M)
+
+outlierTest(lm10F)
+```
+
+
+```{r}
+#superior temporal gyrus: age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm10Fa <- lm(pos_rSTG_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm10Fa)
+std_beta(lm10Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm10Ma <- lm(pos_rSTG_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm10Ma)
+std_beta(lm10Ma)
+```
+
+```{r}
+#angular gyrus
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm11F <- lm(neg_lAG_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm11F)
+std_beta(lm11F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm11M <- lm(neg_lAG_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm11M)
+std_beta(lm11M)
+
+outlierTest(lm11F)
+```
+
+```{r}
+#angular gyrus: age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm11Fa <- lm(neg_lAG_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm11Fa)
+std_beta(lm11Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm11Ma <- lm(neg_lAG_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm11Ma)
+std_beta(lm11Ma)
+```
+
+```{r}
+#R. thalamus 
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm12F <- lm(neg_lThal_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm12F)
+std_beta(lm12F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm12M <- lm(neg_lThal_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm12M)
+std_beta(lm12M)
+
+outlierTest(lm12F)
+```
+
+```{r}
+#R. thalamus : age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm12Fa <- lm(neg_lThal_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm12Fa)
+std_beta(lm12Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm12Ma <- lm(neg_lThal_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm12Ma)
+std_beta(lm12Ma)
+```
+
+```{r}
+#L. CGH
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm13F <- lm(neg_lHipp_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm13F)
+std_beta(lm13F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm13M <- lm(neg_lHipp_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm13M)
+std_beta(lm13M)
+
+outlierTest(lm13F)
+```
+
+```{r}
+#L. CGH: age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm13Fa <- lm(neg_lHipp_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm13Fa)
+std_beta(lm13Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm13Ma <- lm(neg_lHipp_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm13Ma)
+std_beta(lm13Ma)
+```
+
+```{r}
+#R. CGH
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm14F <- lm(neg_rHipp_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm14F)
+std_beta(lm14F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm14M <- lm(neg_rHipp_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm14M)
+std_beta(lm14M)
+
+outlierTest(lm14F)
+```
+
+```{r}
+#R. hipp: age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm14Fa <- lm(neg_rHipp_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm14Fa)
+std_beta(lm14Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm14Ma <- lm(neg_rHipp_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm14Ma)
+std_beta(lm14Ma)
+```
+
+```{r}
+#L. Thalamus
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm15F <- lm(neg_lThal_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm15F)
+std_beta(lm15F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm15M <- lm(neg_lThal_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm15M)
+std_beta(lm15M)
+
+outlierTest(lm15F)
+```
+
+```{r}
+#L. Thalamus: age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm15Fa <- lm(neg_lThal_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm15Fa)
+std_beta(lm15Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm15Ma <- lm(neg_lThal_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm15Ma)
+std_beta(lm15Ma)
+```
+
+```{r}
+#fusiform
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm16F <- lm(neg_FG_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm16F)
+std_beta(lm16F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm16M <- lm(neg_FG_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm16M)
+std_beta(lm16M)
+
+outlierTest(lm16F)
+```
+
+```{r}
+##fusiform: age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm16Fa <- lm(neg_FG_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm16Fa)
+std_beta(lm15Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm16Ma <- lm(neg_FG_cs ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm16Ma)
+std_beta(lm16Ma)
+```
+
+# Longitudinal 
+        
+```{r}
+#L. lingual gyrus
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm17F <- lm(pos_lLG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm17F)
+std_beta(lm17F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm17M <- lm(pos_lLG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm17M)
+std_beta(lm17M)
+
+outlierTest(lm17F)
+```
+
+```{r}
+#L. lingual gyrus: age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm17Fa <- lm(pos_lLG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm17Fa)
+std_beta(lm17Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm17Ma <- lm(pos_lLG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm17Ma)
+std_beta(lm17Ma)
+```
+
+```{r}
+#ITG
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm18F <- lm(pos_lITG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm18F)
+std_beta(lm18F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm18M <- lm(pos_lITG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm18M)
+std_beta(lm18M)
+
+outlierTest(lm18F)
+```
+
+```{r}
+#ITG: age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm18Fa <- lm(pos_lITG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm18Fa)
+std_beta(lm18Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm18Ma <- lm(pos_lITG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm18Ma)
+std_beta(lm18Ma)
+```
+
+```{r}
+#R. lingual gyrus
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm19F <- lm(pos_rLG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm19F)
+std_beta(lm19F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm19M <- lm(pos_rLG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm19M)
+std_beta(lm19M)
+
+outlierTest(lm19F)
+
+# without outliers
+lg_out <-
+  vols %>% 
+  slice(1:29, 31:147) 
+
+# SE female
+contrasts(lg_out$Male) = c(0, 1)
+lm19Fs <- lm(pos_rLG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = lg_out)
+summary(lm19Fs)
+std_beta(lm19Fs)
+
+contrasts(lg_out$Male) = c(1, 0)
+#SE male
+lm19Ms <- lm(pos_rLG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = lg_out)
+summary(lm19Ms)
+std_beta(lm19Ms)
+```
+
+```{r}
+#R. lingual gyrus: age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm19Fa <- lm(pos_rLG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm19Fa)
+std_beta(lm19Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm19Ma <- lm(pos_rLG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm19Ma)
+std_beta(lm19Ma)
+```
+
+```{r}
+#R. superior parietal lobule
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm20F <- lm(pos_rSPL_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm20F)
+std_beta(lm20F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm20M <- lm(pos_rSPL_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm20M)
+std_beta(lm20M)
+
+outlierTest(lm20F)
+```
+
+```{r}
+#R. superior parietal lobule: age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm20Fa <- lm(pos_rSPL_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm20Fa)
+std_beta(lm20Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm20Ma <- lm(pos_rSPL_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm20Ma)
+std_beta(lm20Ma)
+```
+        
+```{r}
+#R. PTR
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm21F <- lm(neg_rPTR_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm21F)
+std_beta(lm21F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm21M <- lm(neg_rPTR_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm21M)
+std_beta(lm21M)
+
+outlierTest(lm21F)
+
+# without outliers
+ptr_out <-
+  vols %>% 
+  slice(1:12, 14:24, 26:147) 
+
+# SE female
+contrasts(ptr_out$Male) = c(0, 1)
+lm21Fs <- lm(neg_rPTR_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = ptr_out)
+summary(lm21Fs)
+std_beta(lm21Fs)
+
+contrasts(ptr_out$Male) = c(1, 0)
+#SE male
+lm21Ms <- lm(neg_rPTR_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = ptr_out)
+summary(lm21M)
+std_beta(lm21Ms)
+```
+
+```{r}
+#R. PTR: age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm21Fa <- lm(neg_rPTR_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm21Fa)
+std_beta(lm21Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm21Ma <- lm(neg_rPTR_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm21Ma)
+std_beta(lm21Ma)
+```
+
+```{r}
+#cerebellum
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm22F <- lm(neg_lCerebel_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm22F)
+std_beta(lm22F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm22M <- lm(neg_lCerebel_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm22M)
+std_beta(lm22M)
+
+outlierTest(lm22F)
+```
+
+```{r}
+#cerebellum: age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm22Fa <- lm(neg_lCerebel_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm22Fa)
+std_beta(lm22Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm22Ma <- lm(neg_lCerebel_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm22Ma)
+std_beta(lm22Ma)
+```
+
+```{r}
+#r. SFG
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm23F <- lm(neg_rSFG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm23F)
+std_beta(lm23F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm23M <- lm(neg_rSFG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm23M)
+std_beta(lm23M)
+
+outlierTest(lm23F)
+```
+
+```{r}
+#r. SFG: age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm23Fa <- lm(neg_rSFG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm23Fa)
+std_beta(lm23Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm23Ma <- lm(neg_rSFG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm23Ma)
+std_beta(lm23Ma)
+```
+
+```{r}
+#L. SFG 
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm24F <- lm(neg_lSFG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm24F)
+std_beta(lm24F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm24M <- lm(neg_lSFG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm24M)
+std_beta(lm24M)
+
+outlierTest(lm24F)
+
+# without outliers
+sfg_out <-
+  vols %>% 
+  slice(1:116, 118:147) 
+
+# SE female
+contrasts(sfg_out$Male) = c(0, 1)
+lm24Fs <- lm(neg_lSFG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = sfg_out)
+summary(lm24Fs)
+std_beta(lm24Fs)
+
+contrasts(sfg_out$Male) = c(1, 0)
+#SE male
+lm24Ms <- lm(neg_lSFG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = sfg_out)
+summary(lm24Ms)
+std_beta(lm24Ms)
+```
+
+```{r}
+#L. SFG:  age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm24Fa <- lm(neg_lSFG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm24Fa)
+std_beta(lm24Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm24Ma <- lm(neg_lSFG_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm24Ma)
+std_beta(lm24Ma)
+```
+
+```{r}
+#SLF
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm25F <- lm(neg_lSLF_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm25F)
+std_beta(lm25F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm25M <- lm(neg_lSLF_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm25M)
+std_beta(lm25M)
+
+outlierTest(lm25F)
+```
+
+```{r}
+#SLF:  age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm25Fa <- lm(neg_lSLF_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm25Fa)
+std_beta(lm25Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm25Ma <- lm(neg_lSLF_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm25Ma)
+std_beta(lm25Ma)
+```
+
+```{r}
+#R. CGH
+contrasts(vols$Male) = c(0, 1)
+# SE female
+lm26F <- lm(neg_rHipp_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm26F)
+std_beta(lm26F)
+
+contrasts(vols$Male) = c(1, 0)
+#SE male
+lm26M <- lm(neg_rHipp_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols)
+summary(lm26M)
+std_beta(lm26M)
+
+outlierTest(lm26F)
+```
+
+
+```{r}
+#R. CGH:  age matched
+contrasts(vols_match$Male) = c(0, 1)
+# SE female
+lm26Fa <- lm(neg_rHipp_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm26Fa)
+std_beta(lm26Fa)
+
+contrasts(vols_match$Male) = c(1, 0)
+#SE male
+lm26Ma <- lm(neg_rHipp_lg ~ sqrt(INR) * Male + T1_Age + White + T1_ICV, data = vols_match)
+summary(lm26Ma)
+std_beta(lm26Ma)
+```
 
 # Residualize all volumes
+
+##full sample
 ```{r}
 residualize_models_cs <-
   vols %>% 
@@ -98,6 +1004,43 @@ residualize_models_lg <-
   )
 ```
 
+##age matched
+```{r}
+residualize_models_cs_agematch <-
+  vols_match %>% 
+  gather(region, volume, pos_rSTG_cs:neg_lAG_cs) %>% 
+  group_by(region) %>% 
+  nest() %>% 
+  mutate(
+    residuals = map(
+      data, 
+      ~lm(volume ~ T1_ICV + White + T1_Age, data = .)$residuals
+    )
+  ) %>% 
+  unnest() %>% 
+  mutate(
+    region = as.factor(region)
+  )
+
+residualize_models_lg_agematch <-
+  vols_match %>% 
+  filter(!is.na(pos_rSPL_lg)) %>% 
+  gather(region, volume, pos_rSPL_lg:neg_rPTR_lg) %>% 
+  group_by(region) %>% 
+  nest() %>% 
+  mutate(
+    residuals = map(
+      data, 
+      ~lm(volume ~ T1_ICV + White + T1_Age + Interval, data = .)$residuals
+    )
+  ) %>% 
+  unnest() %>% 
+  mutate(
+    region = as.factor(region)
+  )
+```
+
+
 # Visualize
 
 ## Cross-sectional
@@ -127,7 +1070,7 @@ residualize_models_cs <-
       ),
       labels = c(
         "Right CV (3, -47, -35)",
-        "Right midbrain WM (3, -32, -4)",
+        "Right midbrain (3, -32, -4)",
         "Right PTR (40, -55, 2)",
         "Right SFG (9, -8, 54)",
         "Right PoG (15, -32, 69)",
@@ -138,10 +1081,62 @@ residualize_models_cs <-
         "Right STG (63, -47, 19)",
         "Left AG (-46, -39, 33)",
         "Right thalamus (13, -23, 8)",
-        "Left hipp./HC/FG (-29, -19, -33)",
-        "Right hipp./HC (23, -14, -23)",
+        "Left CGH (-29, -19, -33)",
+        "Right CGH (23, -14, -23)",
         "Left thalamus (-9, -24, 10)",
-        "Left FG (-49, -49, -16)*"
+        "Left FG (-49, -49, -16)"
+      )
+    ),
+    Sex = factor(
+      Male, 
+      levels = c(0, 1),
+      labels = c("Female", "Male")
+    )
+  )
+
+```
+
+```{r}
+residualize_models_cs_agematch <-
+  residualize_models_cs_agematch %>% 
+  mutate(
+    region_named = factor(
+      region,
+      levels = c(
+        "pos_rCV_cs", 
+        "pos_rMB_cs", 
+        "pos_rPTR_cs", 
+        "pos_rSFG_cs_motor", 
+        "pos_rPCG",
+        "pos_rSFG_cs_dlPFC",
+        "pos_rMFG_cs",
+        "pos_lLOC_cs",
+        "pos_lIFG_cs",
+        "pos_rSTG_cs",
+        "neg_lAG_cs",
+        "neg_rThal_cs", 
+        "neg_lHipp_cs", 
+        "neg_rHipp_cs", 
+        "neg_lThal_cs", 
+        "neg_FG_cs"
+      ),
+      labels = c(
+        "Right CV (3, -47, -35)",
+        "Right midbrain (3, -32, -4)",
+        "Right PTR (40, -55, 2)",
+        "Right SFG (9, -8, 54)",
+        "Right PoG (15, -32, 69)",
+        "Right SFG (11, 46, 45)",
+        "Right MFG (51, 38, 5)",
+        "Left LOG (-23, -89, 3)",
+        "Left IFG (-48, 46, -8)",
+        "Right STG (63, -47, 19)",
+        "Left AG (-46, -39, 33)",
+        "Right thalamus (13, -23, 8)",
+        "Left CGH (-29, -19, -33)",
+        "Right CGH (23, -14, -23)",
+        "Left thalamus (-9, -24, 10)",
+        "Left FG (-49, -49, -16)"
       )
     ),
     Sex = factor(
@@ -172,17 +1167,52 @@ residualize_models_cs %>%
     axis.title = element_text(size = 24),
     axis.text = element_text(size = 18),
     legend.text = element_text(size = 22),
-    strip.text = element_text(size = 16.5),
+    strip.text = element_text(size = 18),
     legend.key.size = unit(2, 'lines')
   ) +
   facet_wrap(.~region_named) +
   labs(
-    y = "Change in volume from earlier to later adolescence\n(residuals)",
+    y = "Volume in early adolescence\n(residuals)",
     x = "Family income-to-needs ratio"
   )
 
 ggsave(
   "~/Desktop/ELS/income_TBM/income_TBM_sync/plots/neg_cross-sectional.png",
+  height = 11,
+  width = 13
+)
+```
+
+```{r}
+residualize_models_cs_agematch %>% 
+  filter(str_detect(region, "neg")) %>% 
+  ggplot(aes(INR, residuals, color = Sex, fill = Sex)) +
+  geom_point(size = 3, alpha = 1/2) +
+  geom_smooth(method = "lm", formula = y ~ sqrt(x), size = 2) +
+  scale_x_continuous(breaks = seq.int(0, 2, .25)) +
+  scale_color_manual(
+    values = c("darkred", "royalblue4")
+  ) +
+  scale_fill_manual(
+    values = c("darkred", "royalblue4")
+  ) +
+  theme_minimal() +
+  theme(
+    legend.title = element_blank(),
+    axis.title = element_text(size = 24),
+    axis.text = element_text(size = 18),
+    legend.text = element_text(size = 22),
+    strip.text = element_text(size = 18),
+    legend.key.size = unit(2, 'lines')
+  ) +
+  facet_wrap(.~region_named) +
+  labs(
+    y = "Volume in early adolescence\n(residuals)",
+    x = "Family income-to-needs ratio"
+  )
+
+ggsave(
+  "~/Desktop/ELS/income_TBM/income_TBM_sync/plots/neg_cross-sectional_agematch.png",
   height = 11,
   width = 13
 )
@@ -207,12 +1237,12 @@ residualize_models_cs %>%
     axis.title = element_text(size = 24),
     axis.text = element_text(size = 18),
     legend.text = element_text(size = 22),
-    strip.text = element_text(size = 16),
+    strip.text = element_text(size = 18),
     legend.key.size = unit(2, 'lines')
   ) +
   facet_wrap(.~region_named) +
   labs(
-    y = "Change in volume from earlier to later adolescence\n(residuals)",
+    y = "Volume in early adolescence\n(residuals)",
     x = "Family income-to-needs ratio"
   )
 
@@ -223,6 +1253,40 @@ ggsave(
 )
 ```
 
+```{r}
+residualize_models_cs_agematch %>% 
+  filter(str_detect(region, "pos")) %>% 
+  ggplot(aes(INR, residuals, color = Sex, fill = Sex)) +
+  geom_point(size = 3, alpha = 1/2) +
+  geom_smooth(method = "lm", formula = y ~ sqrt(x), size = 2) +
+  #scale_x_continuous(breaks = seq.int(0, 2, .2)) +
+  scale_color_manual(
+    values = c("darkred", "royalblue4")
+  ) +
+  scale_fill_manual(
+    values = c("darkred", "royalblue4")
+  ) +
+  theme_minimal() +
+  theme(
+    legend.title = element_blank(),
+    axis.title = element_text(size = 24),
+    axis.text = element_text(size = 18),
+    legend.text = element_text(size = 22),
+    strip.text = element_text(size = 16),
+    legend.key.size = unit(2, 'lines')
+  ) +
+  facet_wrap(.~region_named) +
+  labs(
+    y = "Volume in early adolescence\n(residuals)",
+    x = "Family income-to-needs ratio"
+  )
+
+ggsave(
+  "~/Desktop/ELS/income_TBM/income_TBM_sync/plots/pos_cross-sectional_agematch.png",
+  height = 12,
+  width = 15.5
+)
+```
 
 ## Longitudinal
 ```{r}
@@ -253,7 +1317,46 @@ residualize_models_lg <-
         "Right SFG (17, -5, 58)",
         "Left SFG (-16, 62, -10)",
         "Left SLF (-33, -44, 16)",
-        "Right hipp./HC (26, -33, -7)"
+        "Right CGH (26, -33, -7)"
+      )
+    ),
+    Sex = factor(
+      Male, 
+      levels = c(0, 1),
+      labels = c("Female", "Male")
+    )
+  ) 
+```
+
+```{r}
+residualize_models_lg_agematch <-
+  residualize_models_lg_agematch %>% 
+  mutate(
+    region_named = factor(
+      region,
+      levels = c(
+        "pos_lLG_lg",
+        "pos_lITG_lg",
+        "pos_rLG_lg",
+        "pos_rSPL_lg",
+        "neg_rPTR_lg",
+        "neg_lCerebel_lg",
+        "neg_rSFG_lg",
+        "neg_lSFG_lg",
+        "neg_lSLF_lg",
+        "neg_rHipp_lg"
+      ),
+      labels = c(
+        "Left LG (-20, -75, -5)",
+        "Left ITG (-48, 1, -40)",
+        "Right LG (12, -73, -9)",
+        "R SPL (27, -60, 56)",
+        "Right PTR (24, -70, 7)",
+        "Left cerebellum (-18, -66, -21)",
+        "Right SFG (17, -5, 58)",
+        "Left SFG (-16, 62, -10)",
+        "Left SLF (-33, -44, 16)",
+        "Right CGH (26, -33, -7)"
       )
     ),
     Sex = factor(
@@ -300,6 +1403,41 @@ ggsave(
 ```
 
 ```{r}
+residualize_models_lg_agematch %>% 
+  filter(str_detect(region, "neg")) %>% 
+  ggplot(aes(INR, residuals, color = Sex, fill = Sex)) +
+  geom_point(size = 3, alpha = 1/2) +
+  geom_smooth(method = "lm", formula = y ~ sqrt(x), size = 2) +
+  scale_x_continuous(breaks = seq.int(0, 2, .25)) +
+  scale_color_manual(
+    values = c("darkred", "royalblue4")
+  ) +
+  scale_fill_manual(
+    values = c("darkred", "royalblue4")
+  ) +
+  theme_minimal() +
+  theme(
+    legend.title = element_blank(),
+    axis.title = element_text(size = 24),
+    axis.text = element_text(size = 18),
+    legend.text = element_text(size = 22),
+    strip.text = element_text(size = 18),
+    legend.key.size = unit(2, 'lines')
+  ) +
+  facet_wrap(.~region_named) +
+  labs(
+    y = "Change in volume from earlier to later adolescence\n(residuals)",
+    x = "Family income-to-needs ratio"
+  )
+
+ggsave(
+  "~/Desktop/ELS/income_TBM/income_TBM_sync/plots/neg_longitudinal_agematch.png",
+  height = 11,
+  width = 13
+)
+```
+
+```{r}
 residualize_models_lg %>% 
   filter(str_detect(region, "pos")) %>% 
   ggplot(aes(INR, residuals, color = Sex, fill = Sex)) +
@@ -329,6 +1467,41 @@ residualize_models_lg %>%
 
 ggsave(
   "~/Desktop/ELS/income_TBM/income_TBM_sync/plots/pos_longitudinal.png",
+  height = 11,
+  width = 13
+)
+```
+
+```{r}
+residualize_models_lg_agematch %>% 
+  filter(str_detect(region, "pos")) %>% 
+  ggplot(aes(INR, residuals, color = Sex, fill = Sex)) +
+  geom_point(size = 3, alpha = 1/2) +
+  geom_smooth(method = "lm", formula = y ~ sqrt(x), size = 2) +
+  scale_x_continuous(breaks = seq.int(0, 2, .25)) +
+  scale_color_manual(
+    values = c("darkred", "royalblue4")
+  ) +
+  scale_fill_manual(
+    values = c("darkred", "royalblue4")
+  ) +
+  theme_minimal() +
+  theme(
+    legend.title = element_blank(),
+    axis.title = element_text(size = 24),
+    axis.text = element_text(size = 18),
+    legend.text = element_text(size = 22),
+    strip.text = element_text(size = 18),
+    legend.key.size = unit(2, 'lines')
+  ) +
+  facet_wrap(.~region_named) +
+  labs(
+    y = "Change in volume from earlier to later adolescence\n(residuals)",
+    x = "Family income-to-needs ratio"
+  )
+
+ggsave(
+  "~/Desktop/ELS/income_TBM/income_TBM_sync/plots/pos_longitudinal_agematch.png",
   height = 11,
   width = 13
 )
