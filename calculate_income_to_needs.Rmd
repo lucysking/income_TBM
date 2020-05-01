@@ -14,12 +14,12 @@ library(tidyverse)
 
 ##Parameters
 #files
-income_t1_file <- "~/Desktop/ELS/income_TBM/data/osf/income_t1.csv"
-#in SPSS file, first cleaned variable "pplinhome_1_TEXT" and converted to numeric 
-tbm_covariates_file <- "~/Desktop/ELS/income_TBM/data/osf/tbm_cov_income.csv"
+income_t1_file <- "~/Box/lucy_king_files/ELS/income_TBM/data/final_data/income_t1.csv"
+
+included_ids_file <- "~/Box/lucy_king_files/ELS/income_TBM/data/final_data/included_ids.csv"
 ```
 
-##calculate income-to-needs
+## calculate income-to-needs: Santa Clara County Low Income Thresholds 
 ```{r}
 #income reported in bins, used median for income to needs as in Yu et al. (2017) developmental science
 inr <-
@@ -66,6 +66,222 @@ inr <-
       )
     ),
     income_needs = household_income_numeric / SC_lowincome_limit
+  )
+```
+
+## calculate income-to-needs: Santa Clara County Very Low Income Thresholds 
+```{r}
+inr <-
+  inr %>% 
+  mutate(
+    SC_verylowincome_limit = as.numeric(
+      recode(
+        ppl_in_home,
+        "1" = "41800",
+        "2" = "47800",
+        "3" = "53750",
+        "4" = "59700",
+        "5" = "64500",
+        "6" = "69300",
+        "7" = "74050",
+        "8" = "78850",
+        .default = "78850"
+      )
+    ),
+    income_needs_SC_vlow = household_income_numeric / SC_verylowincome_limit
+  )
+```
+
+## calculate income-to-needs: Santa Clara County Extremely Low Income Thresholds 
+```{r}
+inr <-
+  inr %>% 
+  mutate(
+    SC_extrmlowincome_limit = as.numeric(
+      recode(
+        ppl_in_home,
+        "1" = "25100",
+        "2" = "28650",
+        "3" = "32250",
+        "4" = "35800",
+        "5" = "38700",
+        "6" = "41550",
+        "7" = "44400",
+        "8" = "47300",
+        .default = "47300"
+      )
+    ),
+    income_needs_SC_extlow = 
+      household_income_numeric / SC_extrmlowincome_limit
+  )
+```
+
+## calculate income-to-needs: Federal Low Income Thresholds 
+```{r}
+inr <-
+  inr %>% 
+  mutate(
+    federal_lowincome_limit = as.numeric(
+      recode(
+        ppl_in_home,
+        "1" = "12488",
+        "2" = "15877",
+        "3" = "19515",
+        "4" = "25094",
+        "5" = "29714",
+        "6" = "33618",
+        "7" = "38173",
+        "8" = "42684",
+        "9" = "50681",
+        .default = "50681"
+      )
+    )
+  ) %>% 
+  mutate(
+    income_needs_fed_poverty = 
+      household_income_numeric / federal_lowincome_limit
+  )
+    
+```
+
+## subset to only participants included in paper
+```{r}
+included_ids <-
+  read_csv(included_ids_file) %>% 
+  pull(ELS_ID)
+
+inr <-
+  inr %>% 
+  filter(ELS_ID %in% included_ids)
+```
+
+## visualize
+```{r}
+inr %>% 
+  select(
+    income_needs,
+    income_needs_SC_vlow,
+    income_needs_SC_extlow,
+    income_needs_fed_poverty
+  ) %>% 
+  gather(key, val) %>% 
+  mutate(
+    key = factor(
+      key,
+      levels = c(
+        "income_needs",
+        "income_needs_SC_vlow",
+        "income_needs_SC_extlow",
+        "income_needs_fed_poverty"
+      ),
+      labels = c(
+        "Santa Clara County - Low Income Threshold",
+        "Santa Clara County - Very Low Income Threshold",
+        "Santa Clara County - Extremely Low Income Threshold",
+        "US Census National - Poverty Threshold"
+      )
+    )
+  ) %>% 
+  ggplot(aes(val)) +
+  geom_histogram() +
+  geom_vline(xintercept = 1, color = "red") +
+  scale_x_continuous(breaks = seq.int(0, 8, 1)) +
+  facet_wrap(.~key, nrow = 4, ncol = 1, scales = "free") +
+  theme_minimal() +
+  theme(
+    legend.title = element_blank(),
+    axis.title = element_text(size = 18),
+    axis.text = element_text(size = 16),
+    legend.text = element_text(size = 18),
+    strip.text = element_text(size = 18),
+    legend.key.size = unit(2, 'lines')
+  ) +
+  labs(
+    x = "Income-to-needs ratio"
+  )
+
+ggsave(
+  "~/Box/lucy_king_files/ELS/income_TBM/plots/inr_histograms.png",
+  height = 9,
+  width = 7
+)
+```
+
+## counts: SC low income, SC very low income, SC extremely low income, federal poverty
+```{r}
+inr %>% 
+  count(income_needs < 1) %>% 
+  mutate(per = n / sum(n))
+
+inr %>% 
+  count(income_needs_SC_vlow < 1) %>% 
+  mutate(per = n / sum(n))
+
+inr %>% 
+  count(income_needs_SC_extlow < 1) %>% 
+  mutate(per = n / sum(n))
+
+inr %>% 
+  count(income_needs_fed_poverty < 1) %>% 
+  mutate(per = n / sum(n))
+
+```
+
+```{r}
+inr %>% 
+  arrange(desc(income_needs)) %>% 
+  select(income_needs, income_needs_fed_poverty)
+```
+
+## Children in poverty in Bay Area communities
+https://www.census.gov/quickfacts/fact/map/santaclaracountycalifornia/IPE120218
+
+Bay Area = nine counties: Alameda, Contra Costa, Marin, Napa, San Mateo, Santa Clara, Solano, Sonoma, and San Francisco. 
+
+```{r}
+bay_area <- 
+  tibble(
+  county = c(
+    "Alameda",
+    "Contra Costa",
+    "Marin",
+    "Napa",
+    "San Mateo",
+    "Santa Clara",
+    "Solano",
+    "Sonoma",
+    "San Francisco"
+  ),
+  fed_poverty_rate = c(
+    .09,
+    .078,
+    .066,
+    .088,
+    .068,
+    .073,
+    .079,
+    .099,
+    .101
+  ),
+  population = c(
+    1666753,
+    1150215,
+    259666,
+    139417,
+    769545,
+    1937570,
+    446610,
+    499942,
+    883305
+  ),
+  poverty_individuals = fed_poverty_rate * population
+)
+
+bay_area %>% 
+  summarise(
+    total_poverty = sum(poverty_individuals),
+    total_population = sum(population),
+    overall_fed_rate = total_poverty / total_population
   )
 ```
 
